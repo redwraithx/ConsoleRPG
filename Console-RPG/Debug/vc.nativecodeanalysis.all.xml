@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?><DEFECTS><DEFECT>
+    <SFA>
+      <FILEPATH>C:\Dev\CPP\Console-RPG\Console-RPG\</FILEPATH>
+      <FILENAME>Armor.h</FILENAME>
+      <LINE>11</LINE>
+      <COLUMN>0</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'Armor::mSellValue' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>Armor::{ctor}</FUNCTION>
+    <DECORATED>??0Armor@@QAE@XZ</DECORATED>
+    <FUNCLINE>11</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>Armor::mSellValue</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT><DEFECT>
+    <SFA>
+      <FILEPATH>C:\Dev\CPP\Console-RPG\Console-RPG\</FILEPATH>
+      <FILENAME>Magic.h</FILENAME>
+      <LINE>16</LINE>
+      <COLUMN>0</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'Spell::mRequiredLevel' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>Spell::{ctor}</FUNCTION>
+    <DECORATED>??0Spell@@QAE@XZ</DECORATED>
+    <FUNCLINE>16</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>Spell::mRequiredLevel</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT><DEFECT>
+    <SFA>
+      <FILEPATH>C:\Dev\CPP\Console-RPG\Console-RPG\</FILEPATH>
+      <FILENAME>Weapon.h</FILENAME>
+      <LINE>25</LINE>
+      <COLUMN>0</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'Weapon::mSellValue' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>Weapon::{ctor}</FUNCTION>
+    <DECORATED>??0Weapon@@QAE@XZ</DECORATED>
+    <FUNCLINE>25</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>Weapon::mSellValue</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT></DEFECTS>

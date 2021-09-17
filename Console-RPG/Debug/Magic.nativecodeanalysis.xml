@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Dev\CPP\Console-RPG\Console-RPG\</FILEPATH>
+      <FILENAME>Magic.h</FILENAME>
+      <LINE>16</LINE>
+      <COLUMN>0</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'Spell::mRequiredLevel' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>Spell::{ctor}</FUNCTION>
+    <DECORATED>??0Spell@@QAE@XZ</DECORATED>
+    <FUNCLINE>16</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>Spell::mRequiredLevel</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Dev\CPP\Console-RPG\Console-RPG\</FILEPATH>
+      <FILENAME>Magic.h</FILENAME>
+      <LINE>16</LINE>
+      <COLUMN>0</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'Spell::mDamageRange' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>Spell::{ctor}</FUNCTION>
+    <DECORATED>??0Spell@@QAE@XZ</DECORATED>
+    <FUNCLINE>16</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>Spell::mDamageRange</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Dev\CPP\Console-RPG\Console-RPG\</FILEPATH>
+      <FILENAME>Magic.h</FILENAME>
+      <LINE>16</LINE>
+      <COLUMN>0</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'Spell::mMagicPointsRequired' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>Spell::{ctor}</FUNCTION>
+    <DECORATED>??0Spell@@QAE@XZ</DECORATED>
+    <FUNCLINE>16</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>Spell::mMagicPointsRequired</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>
