@@ -54,7 +54,7 @@ Player::Player()
 	mArmorBonus = 0;
 
 	// this should be set to 1 for normal game play
-	mRewardModifier = 10;
+	mRewardModifier = 0;
 }
 
 // methods
