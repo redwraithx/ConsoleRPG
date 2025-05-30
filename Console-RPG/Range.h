@@ -5,10 +5,12 @@
 
 
 // defines a range [mLow, mHigh]
-struct Range
+struct range
 {
-	int mLow;
-	int mHigh;
+	int m_low;
+	int m_high;
+
+	
 };
 
 

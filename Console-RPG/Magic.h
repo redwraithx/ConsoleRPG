@@ -7,12 +7,12 @@
 //Spell addSpell(std::string name, int damageLow, int damageHigh, int requiredLevel, int magicPointsRequired);
 
 
-struct Spell
+struct spell
 {
-	std::string mName;
-	Range mDamageRange;
-	int mRequiredLevel;
-	int mMagicPointsRequired;
+	std::string m_name;
+	range m_damage_range;
+	int m_required_level;
+	int m_magic_points_required;
 };
 
 

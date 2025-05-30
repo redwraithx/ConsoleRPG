@@ -3,13 +3,13 @@
 
 
 
-static struct DebugMessages
+static struct debug_messages
 {
-	DebugMessages() : enableDebugMessages(false) // set to true for debug messages
+	debug_messages() : enable_debug_messages(false) // set to true for debug messages
 	{}
 
-	bool enableDebugMessages;
-}debugLog;
+	bool enable_debug_messages;
+}debug_log;
 
 
 #endif //DEBUGMODE_H

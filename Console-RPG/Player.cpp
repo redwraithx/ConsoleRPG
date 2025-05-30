@@ -7,6 +7,7 @@
 // #include "Armor.h"
 #include "Debug_Mode.h"
 
+#include <algorithm>
 #include <string>
 #include <iostream>
 
@@ -19,174 +20,186 @@
 
 
 // Prototypes
-Spell addSpell(std::string name, int damageLow, int damageHigh, int requiredLevel, int magicPointsRequired);
-Potion addPotion(int low, int high, int price);
+spell add_spell(const std::string& name, int damage_low, int damage_high, int required_level, int magic_points_required);
+potion add_potion(int low, int high, int price);
 
 
-Player::Player()
+player::player(): m_magic_points_(0), m_max_magic_points_(0), m_magic_bonus_damage_()
 {
-	mName = "Default";
-	mRaceName = "DefaultRace";
-	mClassName = "DefaultClass";
-	mAccuracy = 0;
-	mHitPoints = 0;
-	mMaxHitPoints = 0;
-	mExpPoints = 0;
-	mNextLevelExp = 0;
-	mLevel = 0;
-	mGold = 0;
-	mArmor = 0;
-	
-	mWeaponHeld.mName = "Default Weapon Name";
-	mWeaponHeld.mDamageRange.mLow = 0;
-	mWeaponHeld.mDamageRange.mHigh = 0;
+	m_name_ = "Default";
+	m_race_name_ = "DefaultRace";
+	m_class_name_ = "DefaultClass";
+	m_accuracy_ = 0;
+	m_hit_points_ = 0;
+	m_max_hit_points_ = 0;
+	m_exp_points_ = 0;
+	m_next_level_exp_ = 0;
+	m_level_ = 0;
+	m_gold_ = 0;
+	m_armor_ = 0;
 
-	mOriginalWeaponDamage.mLow = 0;
-	mOriginalWeaponDamage.mHigh = 0;
+	m_weapon_held_.m_name = "Default Weapon Name";
+	m_weapon_held_.m_damage_range.m_low = 0;
+	m_weapon_held_.m_damage_range.m_high = 0;
 
-	mWeaponBonus.mLow = 0;
-	mWeaponBonus.mHigh = 0;
+	m_original_weapon_damage_.m_low = 0;
+	m_original_weapon_damage_.m_high = 0;
 
-	mArmorWorn.mName = "Default Armor Name";
-	mArmorWorn.mArmorValue = 0;
-	mArmorWorn.mSellValue = 0;
+	m_weapon_bonus_.m_low = 0;
+	m_weapon_bonus_.m_high = 0;
 
-	mArmorBonus = 0;
+	m_armor_worn_.m_name = "Default Armor Name";
+	m_armor_worn_.m_armor_value = 0;
+	m_armor_worn_.m_sell_value = 0;
+
+	m_armor_bonus_ = 0;
 
 	// this should be set to 1 for normal game play
-	mRewardModifier = 0;
+	m_reward_modifier_ = 1;
 }
 
 // methods
-bool Player::isDead()
+bool player::is_dead() const
 {
-	return mHitPoints <= 0;
+	return m_hit_points_ <= 0;
 }
 
-std::string Player::getName()
+std::string player::get_name()
 {
-	return mName;
+	return m_name_;
 }
 
-std::string Player::getClass()
+std::string player::get_class()
 {
-	return mClassName;
+	return m_class_name_;
 }
 
-int Player::getGold()
+int player::get_gold() const
 {
-	return mGold;
+	return m_gold_;
 }
 
-void Player::buy(int cost)
+void player::buy(const int cost)
 {
-	mGold -= cost;
+	m_gold_ -= cost;
 }
 
-void Player::equipArmor(Armor newArmor)
+void player::equip_armor(const armor& new_armor)
 {
 	// remove old armor value from armor
-	mArmor -= mArmorWorn.mArmorValue;
+	m_armor_ -= m_armor_worn_.m_armor_value;
 
 	// wear new armor
 	//mArmorWorn.mName = newArmor.mName;
 	//mArmorWorn.mArmorValue = newArmor.mArmorValue;
 	//mArmorWorn.mSellValue = newArmor.mSellValue;
 
-	if (debugLog.enableDebugMessages)
+	if (debug_log.enable_debug_messages)
 	{
-		std::cout << "debug msg - old armor" << std::endl;
-		std::cout << "new armor: " << mArmorWorn.mName << std::endl;
-		std::cout << "new armor AC: " << mArmorWorn.mArmorValue << std::endl;
-		std::cout << "new armor price: " << mArmorWorn.mSellValue << std::endl;
+		std::cout << "debug msg - old armor" << "\n";
+		std::cout << "new armor: " << m_armor_worn_.m_name << "\n";
+		std::cout << "new armor AC: " << m_armor_worn_.m_armor_value << "\n";
+		std::cout << "new armor price: " << m_armor_worn_.m_sell_value << "\n";
 	}
 	
-	mArmorWorn = newArmor;
+	m_armor_worn_ = new_armor;
 
-	if (debugLog.enableDebugMessages)
+	if (debug_log.enable_debug_messages)
 	{
-		std::cout << "debug msg - new armor" << std::endl;
-		std::cout << "new armor: " << mArmorWorn.mName << std::endl;
-		std::cout << "new armor AC: " << mArmorWorn.mArmorValue << std::endl;
-		std::cout << "new armor price: " << mArmorWorn.mSellValue << std::endl;
+		std::cout << "debug msg - new armor" << "\n";
+		std::cout << "new armor: " << m_armor_worn_.m_name << "\n";
+		std::cout << "new armor AC: " << m_armor_worn_.m_armor_value << "\n";
+		std::cout << "new armor price: " << m_armor_worn_.m_sell_value << "\n";
 	}
 	
 
 	// add new armor value to armor
-	mArmor += mArmorWorn.mArmorValue;
+	m_armor_ += m_armor_worn_.m_armor_value;
 }
 
-void Player::equipWeapon(Weapon newWeapon)
+void player::equip_weapon(const weapon& new_weapon)
 {
-	// assign new weapon.
-	mWeaponHeld = newWeapon;
+	// assign a new weapon.
+	m_weapon_held_ = new_weapon;
 
-	// update original damage as for new weapon.
-	setOriginalWeaponValues(newWeapon.mDamageRange);
+	// update original damage as for a new weapon.
+	set_original_weapon_values(new_weapon.m_damage_range);
 }
 
-int Player::getOriginalWeaponValue(bool getLowDamage)
+int player::get_original_weapon_value(const bool get_low_damage) const
 {
-	if (getLowDamage)
-		return mOriginalWeaponDamage.mLow;
+	if (get_low_damage)
+		return m_original_weapon_damage_.m_low;
 	else
-		return mOriginalWeaponDamage.mHigh;
+		return m_original_weapon_damage_.m_high;
 }
 
-int Player::getArmor()
+int player::get_armor() const
 {
-	return mArmor;
+	return m_armor_;
 }
 
-void Player::setArmorBonus(int value)
+void player::set_armor_bonus(const int value)
 {
-	mArmorBonus += value;
+	m_armor_bonus_ += value;
 }
 
-void Player::calculateWeaponDamage()
+void player::calculate_weapon_damage()
 {
-	mWeaponHeld.mDamageRange.mLow = mOriginalWeaponDamage.mLow + mWeaponBonus.mLow;
-	mWeaponHeld.mDamageRange.mHigh = mOriginalWeaponDamage.mHigh + mWeaponBonus.mHigh;
-}
+	const int value1 = m_original_weapon_damage_.m_low + m_weapon_bonus_.m_low;
+	const int value2 = m_original_weapon_damage_.m_high + m_weapon_bonus_.m_high;
 
-void Player::setWeaponBonus(int low, int high)
-{
-	mWeaponBonus.mLow += low;
-	mWeaponBonus.mHigh += high;
-}
-
-int Player::getWeaponBonux(bool getLowDamage)
-{
-	if (getLowDamage)
-		return mWeaponBonus.mLow;
+	if (value1 > value2)
+	{
+		m_weapon_held_.m_damage_range.m_low = value2;
+		m_weapon_held_.m_damage_range.m_high = value1;
+	}
 	else
-		return mWeaponBonus.mHigh;
+	{
+		m_weapon_held_.m_damage_range.m_low = value1;
+		m_weapon_held_.m_damage_range.m_high = value2;
+	}
+	
 }
 
-void Player::setOriginalWeaponValues(const Range& weaponDamage)
+void player::set_weapon_bonus(const int low, const int high)
 {
-	mOriginalWeaponDamage.mLow = weaponDamage.mLow;
-	mOriginalWeaponDamage.mHigh = weaponDamage.mHigh;
+	m_weapon_bonus_.m_low += low;
+	m_weapon_bonus_.m_high += high;
 }
 
-void Player::calculateArmor()
+int player::get_weapon_bonus(const bool get_low_damage) const
 {
-	mArmor = mArmorBonus + mArmorWorn.mArmorValue;
+	if (get_low_damage)
+		return m_weapon_bonus_.m_low;
+	
+	return m_weapon_bonus_.m_high;
 }
 
-
-void Player::setMagicBonusDamage(int low, int high)
+void player::set_original_weapon_values(const range& weapon_damage)
 {
-	mMagicBonusDamage.mLow += low;
-	mMagicBonusDamage.mHigh += high;
+	m_original_weapon_damage_.m_low = weapon_damage.m_low;
+	m_original_weapon_damage_.m_high = weapon_damage.m_high;
 }
 
-void Player::setOriginalMagicDamage(const Range magicDamage)
+void player::calculate_armor()
+{
+	m_armor_ = m_armor_bonus_ + m_armor_worn_.m_armor_value;
+}
+
+
+void player::set_magic_bonus_damage(const int low, const int high)
+{
+	m_magic_bonus_damage_.m_low += low;
+	m_magic_bonus_damage_.m_high += high;
+}
+
+void player::set_original_magic_damage(const range magic_damage)
 {
 	//for (int i = 0; i < mOriginalMagicDamage.size(); i++)
 	//{
 	
-	mOriginalMagicDamage.push_back(magicDamage);
+	m_original_magic_damage_.push_back(magic_damage);
 
 	/*	mOriginalMagicDamage[spellNumber].mLow = magicDamage.mLow;
 		mOriginalMagicDamage[spellNumber].mHigh = magicDamage.mHigh;*/
@@ -194,22 +207,27 @@ void Player::setOriginalMagicDamage(const Range magicDamage)
 	
 }
 
-void Player::increaseSpellManaCost()
+void player::increase_spell_mana_cost()
 {
-	for (int i = 0; i < mMagicSpellsKnown.size(); i++)
+	//for (int i = 0; i < m_magic_spells_known_.size(); i++)
+	for (auto& i : m_magic_spells_known_)
 	{
-		mMagicSpellsKnown[i].mMagicPointsRequired++;
+		if (get_level() % 2 == 0)
+		{
+			i.m_magic_points_required++;
+		}
 	}
 }
 
-void Player::calculateMagicDamage()
+void player::calculate_magic_damage()
 {
-	if (mClassName == "Fighter" || mClassName == "Thief")
+	if (m_class_name_ == "Fighter" || m_class_name_ == "Thief")
 		return;
 
-	if (mMagicSpellsKnown.size() < 1)
+	//if (m_magic_spells_known_.size() < 1)
+	if (m_magic_spells_known_.empty())
 	{
-		std::cout << "It seems you are not a fighter or thief but still have no spells.... log this bug." << std::endl;
+		std::cout << "It seems you are not a fighter or thief but still have no spells.... log this bug." << "\n";
 
 		return;
 	}
@@ -217,24 +235,24 @@ void Player::calculateMagicDamage()
 
 
 	// iterate over all the spells and add the bonus to it
-	for (int i = 0; i < mMagicSpellsKnown.size(); i++)
+	for (size_t i = 0; i < m_magic_spells_known_.size(); i++)
 	{
-		if (debugLog.enableDebugMessages)
+		if (debug_log.enable_debug_messages)
 		{
-			std::cout << "Debug msgs" << std::endl;
-			std::cout << "magic spells known #" << i << ": " << mMagicSpellsKnown[i].mName << std::endl;
-			std::cout << "Magic low bonus " << i << ": " << mMagicBonusDamage.mLow << std::endl;
-			std::cout << "Magic high bonus " << i << ": " << mMagicBonusDamage.mHigh << std::endl;
-			std::cout << "original low damage " << i << ": " << mOriginalMagicDamage[i].mLow << std::endl;
-			std::cout << "original high damage " << i << ": " << mOriginalMagicDamage[i].mHigh << std::endl;
+			std::cout << "Debug messages" << "\n";
+			std::cout << "magic spells known #" << i << ": " << m_magic_spells_known_[i].m_name << "\n";
+			std::cout << "Magic low bonus " << i << ": " << m_magic_bonus_damage_.m_low << "\n";
+			std::cout << "Magic high bonus " << i << ": " << m_magic_bonus_damage_.m_high << "\n";
+			std::cout << "original low damage " << i << ": " << m_original_magic_damage_[i].m_low << "\n";
+			std::cout << "original high damage " << i << ": " << m_original_magic_damage_[i].m_high << "\n";
 		}
 
-		if (mMagicSpellsKnown[i].mRequiredLevel <= mLevel)
+		if (m_magic_spells_known_[i].m_required_level <= m_level_)
 		{
-			//std::cout << i << ") " << mMagicSpellsKnown[i].mName << " (Low: " << mMagicSpellsKnown[i].mDamageRange.mLow << ", High: " << mMagicSpellsKnown[i].mDamageRange.mHigh << ")" << " <> Spell Cost: " << mMagicSpellsKnown[i].mMagicPointsRequired << std::endl;
+			//std::cout << i << ") " << mMagicSpellsKnown[i].mName << " (Low: " << mMagicSpellsKnown[i].mDamageRange.mLow << ", High: " << mMagicSpellsKnown[i].mDamageRange.mHigh << ")" << " <> Spell Cost: " << mMagicSpellsKnown[i].mMagicPointsRequired << "\n";
 
-			mMagicSpellsKnown[i].mDamageRange.mLow = mMagicBonusDamage.mLow + mOriginalMagicDamage[i].mLow;
-			mMagicSpellsKnown[i].mDamageRange.mHigh = mMagicBonusDamage.mHigh + mOriginalMagicDamage[i].mHigh;
+			m_magic_spells_known_[i].m_damage_range.m_low = m_magic_bonus_damage_.m_low + m_original_magic_damage_[i].m_low;
+			m_magic_spells_known_[i].m_damage_range.m_high = m_magic_bonus_damage_.m_high + m_original_magic_damage_[i].m_high;
 
 		}
 
@@ -242,60 +260,62 @@ void Player::calculateMagicDamage()
 }
 
 
-void Player::takeDamage(int damage)
+void player::take_damage(const int damage)
 {
-	mHitPoints -= damage;
+	m_hit_points_ -= damage;
 }
 
-void Player::healDamage(int healValue)
+void player::heal_damage(const int heal_value)
 {
-	mHitPoints += healValue;
+	m_hit_points_ += heal_value;
 
-	if (mHitPoints > mMaxHitPoints)
+	/*if(m_hit_points_ > m_max_hit_points_)
 	{
-		mHitPoints = mMaxHitPoints;
-	}
+		m_hit_points_ = m_max_hit_points_;
+	}*/
+	
+	m_hit_points_ = std::min(m_hit_points_, m_max_hit_points_);
 }
 
-int Player::usePotion(Potion currentPotion)
+int player::use_potion(const potion current_potion)
 {
 	// heal player
-	return (Random(currentPotion.mPotionValue));
+	return (random(current_potion.m_potion_value));
 }
 
-bool Player::addNewPotion(Potion newPotion)
+bool player::add_new_potion(const potion new_potion)
 {
-	if (getPotionCount() > 3) // max # of potions you can carry
+	if (get_potion_count() > 3) // max # of potions you can carry
 	{
 		return false;
 	}
 
 
-	mPotionsOwned.push_back(newPotion);
+	m_potions_owned_.push_back(new_potion);
 
 	return true;
 }
 
-int Player::getPotionCount()
+size_t player::get_potion_count() const
 {
-	return mPotionsOwned.size();
+	return m_potions_owned_.size();
 }
 
-void Player::createClass()
+void player::create_class()
 {
-	std::cout << "CHARACTER CLASS GENERATION" << std::endl;
-	std::cout << "==========================" << std::endl;
+	std::cout << "CHARACTER CLASS GENERATION" << "\n";
+	std::cout << "==========================" << "\n";
 
 	// input character's name
 	std::cout << "Enter your character's name: ";
-	std::getline(std::cin, mName);
+	std::getline(std::cin, m_name_);
 
 	
-	PlayerClassSelection();
+	player_class_selection();
 	
-	std::cout << std::endl;
+	std::cout << "\n";
 
-	PlayerRaceSelection();
+	player_race_selection();
 	
 
 
@@ -303,85 +323,94 @@ void Player::createClass()
 	/////////////////////////////////////////////////////////////////////////////////////////
 
 	// give the player 1 healing potion to start with
-	Potion newPotion = addPotion(3, 8, 30); // low 3, high 8, price 30
-	mPotionsOwned.push_back(newPotion);
+	const potion new_potion = add_potion(3, 8, 30); // low 3, high 8, price 30
+	m_potions_owned_.push_back(new_potion);
 }
 
-void Player::PlayerClassSelection()
+void player::player_class_selection()
 {
 	// character selection.
-	std::cout << "Please select a character class number..." << std::endl;
-	std::cout << "1) Fighter 2) Wizard 3) Cleric 4) Thief: ";
-	int characterNum = 1;
-	std::cin >> characterNum;
+	std::cout << "Please select a character class number..." << "\n";
+	std::cout << "1) Fighter 2) Wizard 3) Cleric 4) Thief 5) Random Class: ";
+	int character_num = 1;
+	std::cin >> character_num;
 
+	if(character_num == 5)
+	{
+		character_num = random(1, 4);
+	}
 
-	switch (characterNum)
+	switch (character_num)
 	{
 	case 1:
 		// fighter
-		mClassName = "Fighter";
-		mAccuracy = 10;
-		mHitPoints = 20;
-		mMaxHitPoints = 20;
-		mMagicPoints = 0;
-		mMaxMagicPoints = 0;
-		mExpPoints = 0;
-		mNextLevelExp = 1000;
-		mLevel = 1;
-		mGold = 0;
-		mArmor = 4;
+		m_class_name_ = "Fighter";
+		m_accuracy_ = 10;
+		m_hit_points_ = 20;
+		m_max_hit_points_ = 20;
+		m_magic_points_ = 0;
+		m_max_magic_points_ = 0;
+		m_exp_points_ = 0;
+		m_next_level_exp_ = 1000;
+		m_level_ = 1;
+		m_gold_ = 0;
+		m_armor_ = 4;
 
 		// weapon
-		mWeaponHeld.mName = "Long Sword";
-		mWeaponHeld.mDamageRange.mLow = 1;
-		mWeaponHeld.mDamageRange.mHigh = 8;
+		m_weapon_held_.m_name = "Long Sword";
+		m_weapon_held_.m_damage_range.m_low = 1;
+		m_weapon_held_.m_damage_range.m_high = 8;
 
-		setOriginalWeaponValues(mWeaponHeld.mDamageRange);
+		set_original_weapon_values(m_weapon_held_.m_damage_range);
 
 		// armor
-		mArmorWorn.mName = "Cloth Rags";
-		mArmorWorn.mArmorValue = 0;
-		mArmorWorn.mSellValue = 0;
+		m_armor_worn_.m_name = "Cloth Rags";
+		m_armor_worn_.m_armor_value = 0;
+		m_armor_worn_.m_sell_value = 0;
 
-		mArmorBonus = mArmor;
+		m_armor_bonus_ = m_armor_;
 
 		break;
 	case 2:
 		// wizard
-		mClassName = "Wizard";
-		mAccuracy = 5;
-		mHitPoints = 10;
-		mMaxHitPoints = 10;
-		mMagicPoints = 10;
-		mMaxMagicPoints = 10;
-		mExpPoints = 0;
-		mNextLevelExp = 1000;
-		mLevel = 1;
-		mGold = 0;
-		mArmor = 1;
+		m_class_name_ = "Wizard";
+		m_accuracy_ = 5;
+		m_hit_points_ = 10;
+		m_max_hit_points_ = 10;
+		m_magic_points_ = 10;
+		m_max_magic_points_ = 10;
+		m_exp_points_ = 0;
+		m_next_level_exp_ = 1000;
+		m_level_ = 1;
+		m_gold_ = 0;
+		m_armor_ = 1;
 
 		// weapon
-		mWeaponHeld.mName = "Staff";
-		mWeaponHeld.mDamageRange.mLow = 1;
-		mWeaponHeld.mDamageRange.mHigh = 4;
+		m_weapon_held_.m_name = "Staff";
+		m_weapon_held_.m_damage_range.m_low = 1;
+		m_weapon_held_.m_damage_range.m_high = 4;
 
-		setOriginalWeaponValues(mWeaponHeld.mDamageRange);
+		set_original_weapon_values(m_weapon_held_.m_damage_range);
 
 		// armor
-		mArmorWorn.mName = "Cloth Rags";
-		mArmorWorn.mArmorValue = 0;
-		mArmorWorn.mSellValue = 0;
+		m_armor_worn_.m_name = "Cloth Rags";
+		m_armor_worn_.m_armor_value = 0;
+		m_armor_worn_.m_sell_value = 0;
 
-		mArmorBonus = mArmor;
+		m_armor_bonus_ = m_armor_;
 
 		// add wizard spells
-		mMagicSpellsKnown.push_back(addSpell("Magic Missle", 20, 100, 1, 2));
-		mMagicSpellsKnown.push_back(addSpell("Fire Ball", 6, 20, 3, 6));
+		m_magic_spells_known_.push_back(add_spell("Magic Missile", 20, 100, 1, 2));
+		m_magic_spells_known_.push_back(add_spell("Ice Blast", 4, 14, 3, 4));
+		m_magic_spells_known_.push_back(add_spell("Fire Blast", 6, 20, 5, 6));
+		m_magic_spells_known_.push_back(add_spell("Fire Ball", 1, 34, 8, 8));
+		m_magic_spells_known_.push_back(add_spell("Lightning Flash", 10, 40, 12, 10));
+		m_magic_spells_known_.push_back(add_spell("Lightning Blast", 20, 60, 20, 12));
 
-		for (int i = 0; i < mMagicSpellsKnown.size(); i++)
+		//for (int i = 0; i < m_magic_spells_known_.size(); i++)
+		for (const auto& i : m_magic_spells_known_)
 		{
-			setOriginalMagicDamage(mMagicSpellsKnown[i].mDamageRange);
+			set_original_magic_damage(i.m_damage_range);
 		}
 
 		
@@ -389,104 +418,113 @@ void Player::PlayerClassSelection()
 		break;
 	case 3:
 		// cleric
-		mClassName = "Cleric";
-		mAccuracy = 8;
-		mHitPoints = 15;
-		mMaxHitPoints = 15;
-		mMagicPoints = 6;
-		mMaxMagicPoints = 6;
-		mExpPoints = 0;
-		mNextLevelExp = 1000;
-		mLevel = 1;
-		mGold = 0;
-		mArmor = 3;
+		m_class_name_ = "Cleric";
+		m_accuracy_ = 8;
+		m_hit_points_ = 15;
+		m_max_hit_points_ = 15;
+		m_magic_points_ = 6;
+		m_max_magic_points_ = 6;
+		m_exp_points_ = 0;
+		m_next_level_exp_ = 1000;
+		m_level_ = 1;
+		m_gold_ = 0;
+		m_armor_ = 3;
 
 		// weapon
-		mWeaponHeld.mName = "Flail";
-		mWeaponHeld.mDamageRange.mLow = 1;
-		mWeaponHeld.mDamageRange.mHigh = 6;
+		m_weapon_held_.m_name = "Flail";
+		m_weapon_held_.m_damage_range.m_low = 1;
+		m_weapon_held_.m_damage_range.m_high = 6;
 
-		setOriginalWeaponValues(mWeaponHeld.mDamageRange);
+		set_original_weapon_values(m_weapon_held_.m_damage_range);
 
 		// armor
-		mArmorWorn.mName = "Cloth Rags";
-		mArmorWorn.mArmorValue = 0;
-		mArmorWorn.mSellValue = 0;
+		m_armor_worn_.m_name = "Cloth Rags";
+		m_armor_worn_.m_armor_value = 0;
+		m_armor_worn_.m_sell_value = 0;
 
-		mArmorBonus = mArmor;
+		m_armor_bonus_ = m_armor_;
 
 		// add Cleric spells
-		mMagicSpellsKnown.push_back(addSpell("Minor Healing", 1, 8, 1, 2));
-		mMagicSpellsKnown.push_back(addSpell("Major Healing", 6, 16, 3, 5));
+		m_magic_spells_known_.push_back(add_spell("Minor Healing", 1, 8, 1, 2));
+		m_magic_spells_known_.push_back(add_spell("Healing", 6, 16, 6, 5));
+		m_magic_spells_known_.push_back(add_spell("Major Healing", 12, 26, 10, 8));
+		m_magic_spells_known_.push_back(add_spell("Massive Healing", 22, 46, 16, 14));
+		m_magic_spells_known_.push_back(add_spell("Full Healing", 80, 100, 22, 25));
 
 		// could use a for loop to set all spells at once, even if you add more
-		for (int i = 0; i < mMagicSpellsKnown.size(); i++)
+		//for (int i = 0; i < m_magic_spells_known_.size(); i++)
+		for (const auto& i : m_magic_spells_known_)
 		{
-			setOriginalMagicDamage(mMagicSpellsKnown[i].mDamageRange);
+			set_original_magic_damage(i.m_damage_range);
 		}
 
 		break;
 	default:
 		// thief
-		mClassName = "Thief";
-		mAccuracy = 7;
-		mHitPoints = 12;
-		mMaxHitPoints = 12;
-		mMagicPoints = 0;
-		mMaxMagicPoints = 0;
-		mExpPoints = 0;
-		mNextLevelExp = 1000;
-		mLevel = 1;
-		mGold = 0;
-		mArmor = 2;
+		m_class_name_ = "Thief";
+		m_accuracy_ = 7;
+		m_hit_points_ = 12;
+		m_max_hit_points_ = 12;
+		m_magic_points_ = 0;
+		m_max_magic_points_ = 0;
+		m_exp_points_ = 0;
+		m_next_level_exp_ = 1000;
+		m_level_ = 1;
+		m_gold_ = 0;
+		m_armor_ = 2;
 
 		// weapon
-		mWeaponHeld.mName = "Tarnished Dagger";
-		mWeaponHeld.mDamageRange.mLow = 1;
-		mWeaponHeld.mDamageRange.mHigh = 4;
+		m_weapon_held_.m_name = "Tarnished Dagger";
+		m_weapon_held_.m_damage_range.m_low = 1;
+		m_weapon_held_.m_damage_range.m_high = 4;
 
-		setOriginalWeaponValues(mWeaponHeld.mDamageRange);
+		set_original_weapon_values(m_weapon_held_.m_damage_range);
 
 		// armor
-		mArmorWorn.mName = "Cloth Rags";
-		mArmorWorn.mArmorValue = 0;
-		mArmorWorn.mSellValue = 0;
+		m_armor_worn_.m_name = "Cloth Rags";
+		m_armor_worn_.m_armor_value = 0;
+		m_armor_worn_.m_sell_value = 0;
 
-		mArmorBonus = mArmor;
+		m_armor_bonus_ = m_armor_;
 
 		break;
 
 	}
 }
 
-void Player::PlayerRaceSelection()
+void player::player_race_selection()
 {
 	// race selection
-	std::cout << "Race Selection" << std::endl;
-	std::cout << "--------------" << std::endl;
-	std::cout << "1) Human, 2) Elf, 3) Dwarf, 4) Gnome" << std::endl;
+	std::cout << "Race Selection" << "\n";
+	std::cout << "--------------" << "\n";
+	std::cout << "1) Human, 2) Elf, 3) Dwarf, 4) Gnome 5) Random Race" << "\n";
 	std::cout << "Select your race number: ";
 
 	int selection = 1;
 	std::cin >> selection;
 
+	if(selection == 5)
+	{
+		selection = random(1, 4);
+	}
 
-	int tempHp = 0, tempAcc = 0, tempMagicPoints = 0;
+
+	int temp_hp = 0, temp_acc = 0, temp_magic_points = 0;
 
 	switch (selection) // 
 	{
 	case 1: // human
-		mRaceName = "Human";
+		m_race_name_ = "Human";
 
 		// pro   +(1-3) hps
-		tempHp += Random(1, 5);
+		temp_hp += random(1, 5);
 
 		// con   -(1-2) acc
-		tempAcc -= Random(1, 2);
+		temp_acc -= random(1, 2);
 
-		if (mClassName == "Wizard" || mClassName == "Cleric")
+		if (m_class_name_ == "Wizard" || m_class_name_ == "Cleric")
 		{
-			tempMagicPoints += Random(0, 3);
+			temp_magic_points += random(0, 3);
 		}
 
 		break;
@@ -494,17 +532,16 @@ void Player::PlayerRaceSelection()
 	case 2: // elf
 			// pro   +(1-2) acc
 
-		mRaceName = "Elf";
+		m_race_name_ = "Elf";
 		
-		tempAcc += Random(1, 4);
+		temp_acc += random(1, 4);
 
 		// con   -(1-2) hps
-		tempHp -= Random(1, 2);
+		temp_hp -= random(1, 2);
 
-		if (mClassName == "Wizard" || mClassName == "Cleric")
+		if (m_class_name_ == "Wizard" || m_class_name_ == "Cleric")
 		{
-			tempMagicPoints += Random(1, 5);
-			tempMagicPoints += Random(10, 50);
+			temp_magic_points += random(1, 15);
 		}
 
 		break;
@@ -512,16 +549,16 @@ void Player::PlayerRaceSelection()
 	case 3: // dwarf
 			// pro   +(2-6) hps
 
-		mRaceName = "Dwarf";
+		m_race_name_ = "Dwarf";
 
-		tempHp += Random(2, 8);
+		temp_hp += random(2, 8);
 
 		// con   -(1-2) acc
-		tempAcc -= Random(1, 2);
+		temp_acc -= random(1, 2);
 
-		if (mClassName == "Wizard" || mClassName == "Cleric")
+		if (m_class_name_ == "Wizard" || m_class_name_ == "Cleric")
 		{
-			tempMagicPoints += Random(0, 2);
+			temp_magic_points += random(0, 6);
 		}
 
 		break;
@@ -529,63 +566,63 @@ void Player::PlayerRaceSelection()
 	default: // gnome
 			 // pro   +(1-4) acc
 
-		mRaceName = "Gnome";
+		m_race_name_ = "Gnome";
 
-		tempAcc += Random(1, 8);
+		temp_acc += random(1, 8);
 
 		// con   -(1-2) hp
-		tempHp -= Random(1, 2);
+		temp_hp -= random(1, 2);
 
-		if (mClassName == "Wizard" || mClassName == "Cleric")
+		if (m_class_name_ == "Wizard" || m_class_name_ == "Cleric")
 		{
-			tempMagicPoints += Random(0, 1);
+			temp_magic_points += random(0, 4);
 		}
 
 		break;
 	}
 
-	if (debugLog.enableDebugMessages)
+	if (debug_log.enable_debug_messages)
 	{
-		std::cout << "DEBUG MSGS" << std::endl;
-		std::cout << "Hp before: " << mMaxHitPoints << std::endl;
-		std::cout << "Acc before: " << mAccuracy << std::endl;
-		std::cout << "Magic Points before: " << mMagicPoints << std::endl;
+		std::cout << "DEBUG messages" << "\n";
+		std::cout << "Hp before: " << m_max_hit_points_ << "\n";
+		std::cout << "Acc before: " << m_accuracy_ << "\n";
+		std::cout << "Magic Points before: " << m_magic_points_ << "\n";
 	}
 
 
-	mMaxHitPoints += tempHp;
-	mHitPoints = mMaxHitPoints;
-	mAccuracy += tempAcc;
-	mMaxMagicPoints += tempMagicPoints;
+	m_max_hit_points_ += temp_hp;
+	m_hit_points_ = m_max_hit_points_;
+	m_accuracy_ += temp_acc;
+	m_max_magic_points_ += temp_magic_points;
 
-	if (debugLog.enableDebugMessages)
+	if (debug_log.enable_debug_messages)
 	{
-		std::cout << "DEBUG MSGS" << std::endl;
-		std::cout << "Hp after: " << mHitPoints << std::endl;
-		std::cout << "Acc after: " << mAccuracy << std::endl;
-		std::cout << "Magic Points After: " << mMaxMagicPoints << std::endl;
-		std::cout << "hpBonus: " << tempHp << std::endl;
-		std::cout << "accBonus: " << tempAcc << std::endl;
-		std::cout << "Magic points bonus: " << tempMagicPoints << std::endl;
+		std::cout << "DEBUG messages" << "\n";
+		std::cout << "Hp after: " << m_hit_points_ << "\n";
+		std::cout << "Acc after: " << m_accuracy_ << "\n";
+		std::cout << "Magic Points After: " << m_max_magic_points_ << "\n";
+		std::cout << "hpBonus: " << temp_hp << "\n";
+		std::cout << "accBonus: " << temp_acc << "\n";
+		std::cout << "Magic points bonus: " << temp_magic_points << "\n";
 	}
 
 
-	std::cout << std::endl;
+	std::cout << "\n";
 }
 
-bool Player::attack(Monster* monster[])
+bool player::attack(Monster* monster[])
 {
 	int selection = 1;
 	std::cout << "1) Attack, ";
 	
 	// check for caster status
-	if (mClassName == "Wizard" || mClassName == "Cleric")
+	if (m_class_name_ == "Wizard" || m_class_name_ == "Cleric")
 	{
 		std::cout << "2) use Spells, ";
 	}
 
 	// check if user has any potions to use
-	if (!mPotionsOwned.empty())
+	if (!m_potions_owned_.empty())
 	{
 		std::cout << "3) use Potion, ";
 	}
@@ -593,52 +630,52 @@ bool Player::attack(Monster* monster[])
 	std::cout << "4) Run: ";
 	std::cin >> selection;
 
-	std::cout << std::endl;
+	std::cout << "\n";
 
 
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	if (debugLog.enableDebugMessages)
+	if (debug_log.enable_debug_messages)
 	{
-		std::cout << "is monster[1] alive and can it attack, else all momsters are dead and return" << std::endl;
+		std::cout << "is monster[1] alive and can it attack, else all monsters are dead and return" << "\n";
 	}
 
-	bool areThereTwoMonsters = (monster[1] != 0 ? true : false);
+	const bool are_there_two_monsters = (monster[1] != nullptr ? true : false);
 
-	int monsterToAttack = 0;
+	int monster_to_attack = 0;
 
-	if (!monster[monsterToAttack]->isDead())
+	if (!monster[monster_to_attack]->is_dead())
 	{
 		////////////////////////////////////////////////////////////
 		// player attacks first monster debug msg
-		if (debugLog.enableDebugMessages)
+		if (debug_log.enable_debug_messages)
 		{
-			std::cout << "Player is attacking monster 1" << std::endl;
-			std::cout << "monsterToAttack: " << monsterToAttack << std::endl;
+			std::cout << "Player is attacking monster 1" << "\n";
+			std::cout << "monsterToAttack: " << monster_to_attack << "\n";
 		}
 	}
-	else if (areThereTwoMonsters && monster[monsterToAttack]->isDead() && !monster[monsterToAttack + 1]->isDead())
+	else if (are_there_two_monsters && monster[monster_to_attack]->is_dead() && !monster[monster_to_attack + 1]->is_dead())
 	{
-		monsterToAttack = 1;
+		monster_to_attack = 1;
 
 		/////////////////////////////////////////////////////////////
 		// player attacks 2nd monster debug msg
-		if (debugLog.enableDebugMessages)
+		if (debug_log.enable_debug_messages)
 		{
-			std::cout << "Player is attacking monster 2" << std::endl;
-			std::cout << "monsterToAttack: " << monsterToAttack << std::endl;
+			std::cout << "Player is attacking monster 2" << "\n";
+			std::cout << "monsterToAttack: " << monster_to_attack << "\n";
 		}
 	}
 	else
 	{
 		/////////////////////////////////////////////////////////////
 		// debug msg
-		if (debugLog.enableDebugMessages)
+		if (debug_log.enable_debug_messages)
 		{
-			std::cout << "Player isnt attacking at all.... else is returning from battle" << std::endl;
-			std::cout << "M1: " << monster[0] << std::endl;
-			std::cout << "M2: " << monster[1] << std::endl;
+			std::cout << "Player isn't attacking at all.... else is returning from battle" << "\n";
+			std::cout << "M1: " << monster[0] << "\n";
+			std::cout << "M2: " << monster[1] << "\n";
 		}
 
 		return false;
@@ -667,102 +704,109 @@ bool Player::attack(Monster* monster[])
 	{
 	case 1:
 		// Attack
-		std::cout << "You attack an " << monster[monsterToAttack]->getName() << " with a " << mWeaponHeld.mName << std::endl;
+		std::cout << "You attack an " << monster[monster_to_attack]->get_name() << " with a " << m_weapon_held_.m_name << "\n";
 
-		if (Random(0, 20) < mAccuracy)
+		if (random(0, 20) < m_accuracy_)
 		{
-			int damage = Random(mWeaponHeld.mDamageRange);
+			const int damage = random(m_weapon_held_.m_damage_range);
 
-			int totalDamage = damage - monster[monsterToAttack]->getArmor();
+			const int total_damage = damage - monster[monster_to_attack]->get_armor();
 
-			if (totalDamage <= 0)
+			if (total_damage <= 0)
 			{
-				std::cout << "Your attack failed to penetrate the armor. " << std::endl;
+				std::cout << "Your attack failed to penetrate the armor. " << "\n";
 			}
 			else
 			{
-				std::cout << "You attack for " << totalDamage << " damage!" << std::endl;
+				std::cout << "You attack for " << total_damage << " damage!" << "\n";
 
-				// subtract from monster's hitpoints.
-				monster[monsterToAttack]->takeDamage(totalDamage);
+				// subtract from monster's hit points.
+				monster[monster_to_attack]->take_damage(total_damage);
 			}
 		}
 		else
 		{
-			std::cout << "You miss!" << std::endl;
+			std::cout << "You miss!" << "\n";
 		}
 
-		std::cout << std::endl;
+		std::cout << "\n";
 
 		break;
 
 	case 2:
 	{
-		if (mClassName == "Fighter" || mClassName == "Thief")
+		if (m_class_name_ == "Fighter" || m_class_name_ == "Thief")
 		{
-			std::cout << "It seems you haven't quite mastered the magical arts... Choose another selection" << std::endl;
+			std::cout << "It seems you haven't quite mastered the magical arts... Choose another selection" << "\n";
 
 			break;
 		}
 
 		// else you have magic to use
-		std::cout << "Magical spells you currently have." << std::endl;
-		std::cout << "----------------------------------" << std::endl;
+		std::cout << "Magical spells you currently have." << "\n";
+		std::cout << "----------------------------------" << "\n";
 
 		// list what spells this player has as choices.
-		for (int i = 0; i < mMagicSpellsKnown.size(); i++)
+		size_t counter = 0;
+		for (size_t i = 0; i < m_magic_spells_known_.size(); i++)
 		{
 			// do we have the level to use the spell?
-			if (mMagicSpellsKnown[i].mRequiredLevel <= mLevel)
+			if (m_magic_spells_known_[counter].m_required_level <= m_level_)
 			{
-				std::cout << "- " << i << ") " << mMagicSpellsKnown[i].mName << " ";
+				std::cout << "- " << counter + 1 << ") " << m_magic_spells_known_[counter].m_name << " - cost: " << m_magic_spells_known_[counter].m_magic_points_required << "\n";
+				
+				counter++;
 			}
 
 			
 		}
-
-		std::cout << std::endl;
-		std::cout << "----------------------------------" << std::endl << std::endl;
+			
+		std::cout << "- " << (counter + 1) << ") Cancel Casting Spell\n";
+		std::cout << "----------------------------------" << "\n" << "\n";
 
 		std::cout << "Enter the number of the spell you wish to cast: ";
 
 		// get selection from user
-		int spellSelection = 1;
+		size_t spell_selection = 1;
 
-		std::cin >> spellSelection;
+		std::cin >> spell_selection;
 		
-
-
+		spell_selection -= 1; // adjust for 0 based index
+			
 		// take action IF user has enough mana to cast the spell... else loop out and try again
-		if (  (spellSelection < 0 || spellSelection > mMagicSpellsKnown.size() ) || mMagicSpellsKnown[spellSelection].mRequiredLevel > mLevel)
+		if (!m_magic_spells_known_.empty() && spell_selection == (get_number_of_owned_spells())) // cancel spell casting	
 		{
-			std::cout << "You dont have a spell for [" << spellSelection << "]. Try selecting a spell you can use!" << std::endl;
+			std::cout << "You cancel casting a spell." << "\n";
 		}
-		else if (mMagicPoints >= mMagicSpellsKnown[spellSelection].mMagicPointsRequired && mMagicSpellsKnown[spellSelection].mRequiredLevel <= mLevel)
+		else if (  (spell_selection < 0 || spell_selection > m_magic_spells_known_.size() ) || m_magic_spells_known_[spell_selection].m_required_level > m_level_)
 		{
-			if (mClassName == "Wizard")
+			std::cout << "You dont have a spell for [" << spell_selection << "]. Try selecting a spell you can use!" << "\n";
+		}
+		else if (m_magic_points_ >= m_magic_spells_known_[spell_selection].m_magic_points_required && m_magic_spells_known_[spell_selection].m_required_level <= m_level_)
+		{
+			if (m_class_name_ == "Wizard")
 			{
 				// cast the spell, damages monster
-				int spellDamage = Random(mMagicSpellsKnown[spellSelection].mDamageRange);
-				monster[monsterToAttack]->takeDamage(spellDamage);
+				const int spell_damage = random(m_magic_spells_known_[spell_selection].m_damage_range);
+				monster[monster_to_attack]->take_damage(spell_damage);
 
-				std::cout << "You hit the " << monster[monsterToAttack]->getName() << ", with the " << mMagicSpellsKnown[spellSelection].mName << " spell. Dealing " << spellDamage << " magical damage to them." << std::endl;
+				std::cout << "You hit the " << monster[monster_to_attack]->get_name() << ", with the " << m_magic_spells_known_[spell_selection].m_name << " spell. Dealing " << spell_damage << " magical damage to them." << "\n";
 
 				// update mMagicPoints
-				mMagicPoints -= mMagicSpellsKnown[spellSelection].mMagicPointsRequired;
+				m_magic_points_ -= m_magic_spells_known_[spell_selection].m_magic_points_required;
 			}
 			else // cleric
 			{
 				// cast the spell, damages monster
-				int healingAmount = Random(mMagicSpellsKnown[spellSelection].mDamageRange);
-				healDamage(healingAmount);
+				const int healing_amount = random(m_magic_spells_known_[spell_selection].m_damage_range);
+				heal_damage(healing_amount);
 
 
 
-				std::cout << "Casting the " << mMagicSpellsKnown[spellSelection].mName << " spell. You heal yourself for " << healingAmount << " damage." << std::endl;
+				std::cout << "Casting the " << m_magic_spells_known_[spell_selection].m_name << " spell. You heal yourself for " << healing_amount << " hit point(s)." << "\n";
 
 				// update mMagicPoints
-				mMagicPoints -= mMagicSpellsKnown[spellSelection].mMagicPointsRequired;
+				m_magic_points_ -= m_magic_spells_known_[spell_selection].m_magic_points_required;
 			}
 
 
@@ -770,57 +814,58 @@ bool Player::attack(Monster* monster[])
 		}
 		else
 		{
-			std::cout << "You dont have enough \"Magic Points\" to cast " << mMagicSpellsKnown[spellSelection].mName << std::endl;
-			//std::cout << "Make another selection." << std::endl;
+			std::cout << "You dont have enough \"Magic Points\" to cast " << m_magic_spells_known_[spell_selection].m_name << "\n";
+			//std::cout << "Make another selection." << "\n";
 
 		}
 
 
-		std::cout << std::endl;
+		std::cout << "\n";
 
 		break;
 	}
 	case 3:
 	{
-		if (debugLog.enableDebugMessages)
+		if (debug_log.enable_debug_messages)
 		{
-			std::cout << "DEBUG MSG POTION COUNT" << std::endl;
-			std::cout << "potions before: " << mPotionsOwned.size() << std::endl;
+			std::cout << "DEBUG MSG POTION COUNT" << "\n";
+			std::cout << "potions before: " << m_potions_owned_.size() << "\n";
 		}
 
 
 
-		if (mPotionsOwned.empty())
+		if (m_potions_owned_.empty())
 		{
-			std::cout << "You look for a potion, but you have none it seems." << std::endl << std::endl;
+			std::cout << "You look for a potion, but you have none it seems." << "\n" << "\n";
 
 			break; // you have no potions
 		}
 
 
-		if (mHitPoints == mMaxHitPoints)
+		if (m_hit_points_ == m_max_hit_points_)
 		{
-			std::cout << "You have full hitpoints, you dont need to use that potion right now." << std::endl << std::endl;
+			std::cout << "You have full hit points, you dont need to use that potion right now." << "\n" << "\n";
 
 			break;
 		}
 		
-		Potion testPotion = mPotionsOwned[0];
-		mPotionsOwned.pop_back();
+		potion testPotion = m_potions_owned_[0];
+		m_potions_owned_.pop_back();
 
-		int healPlayer = usePotion(testPotion);
+		int healPlayer = use_potion(testPotion);
 
-		mHitPoints += healPlayer;
+		m_hit_points_ += healPlayer;
 
-		if (mHitPoints > mMaxHitPoints)
+		/*if (m_hit_points_ > m_max_hit_points_)
 		{
-			mHitPoints = mMaxHitPoints;
-		}
+			m_hit_points_ = m_max_hit_points_;
+		}*/
+		m_hit_points_ = std::min(m_hit_points_, m_max_hit_points_);
 
-		if (debugLog.enableDebugMessages)
+		if (debug_log.enable_debug_messages)
 		{
-			std::cout << "DEBUG MSG POTION COUNT" << std::endl;
-			std::cout << "potions after: " << mPotionsOwned.size() << std::endl;
+			std::cout << "DEBUG MSG POTION COUNT" << "\n";
+			std::cout << "potions after: " << m_potions_owned_.size() << "\n";
 		}
 		
 
@@ -828,45 +873,47 @@ bool Player::attack(Monster* monster[])
 	}
 	case 4: // run away
 	{
-		int roll = Random(1, 4);
+		int roll; // = random(1, 4);
 
-		if (mClassName == "Thief")
+		if (m_class_name_ == "Thief")
 		{
-			// 50% chance of being able to run, if your a sneaky thief
-			roll = Random(2, 4);
+			// 50% chance of being able to run if you're a sneaky thief
+			roll = random(2, 4);
 
-			if (debugLog.enableDebugMessages)
+			if (debug_log.enable_debug_messages)
 			{
-				std::cout << "DEBUG MSG" << std::endl;
-				std::cout << "run roll thief: " << roll << std::endl;
+				std::cout << "DEBUG MSG" << "\n";
+				std::cout << "run roll thief: " << roll << "\n";
+			}
+
+			if (roll == 1 || roll == 2)
+			{
+				std::cout << "You run away!" << "\n";
+
+				return true; // return out of the function
 			}
 			
 		}
 		else
 		{
 			// 25% chance of being able to run.
-			roll = Random(1, 4);
+			roll = random(1, 4);
+
+			if (roll == 1)
+			{
+				std::cout << "You run away!" << "\n";
+
+				return true; // return out of the function
+			}
 		}
 
 
-		if ((roll == 1 || roll == 2) && mClassName == "Thief")
-		{
-			std::cout << "You run away!" << std::endl;
-
-			return true; // return out of the function
-		}
-		else if (roll == 1)
-		{
-			std::cout << "You run away!" << std::endl;
-
-			return true; // return out of the function
-		}
-		else
-		{
-			std::cout << "You could not escape!" << std::endl;
-			break;
-		}
+		std::cout << "You could not escape!" << "\n";
+		break;
+			
 	} // end case 4
+	default:
+		break;
 	}// end switch
 
 	return false;
@@ -893,14 +940,14 @@ bool Player::attack(Monster* monster[])
 //	std::cout << "4) Run: ";
 //	std::cin >> selection;
 //
-//	std::cout << std::endl;
+//	std::cout << "\n";
 //
 //
 //	switch (selection)
 //	{
 //	case 1:
 //		// Attack
-//		std::cout << "You attack an " << monster.getName() << " with a " << mWeaponHeld.mName << std::endl;
+//		std::cout << "You attack an " << monster.getName() << " with a " << mWeaponHeld.mName << "\n";
 //
 //		if (Random(0, 20) < mAccuracy)
 //		{
@@ -910,22 +957,22 @@ bool Player::attack(Monster* monster[])
 //
 //			if (totalDamage <= 0)
 //			{
-//				std::cout << "Your attack failed to penetrate the armor. " << std::endl;
+//				std::cout << "Your attack failed to penetrate the armor. " << "\n";
 //			}
 //			else
 //			{
-//				std::cout << "You attack for " << totalDamage << " damage!" << std::endl;
+//				std::cout << "You attack for " << totalDamage << " damage!" << "\n";
 //
-//				// subtract from monster's hitpoints.
+//				// subtract from monster's hit points.
 //				monster.takeDamage(totalDamage);
 //			}
 //		}
 //		else
 //		{
-//			std::cout << "You miss!" << std::endl;
+//			std::cout << "You miss!" << "\n";
 //		}
 //
-//		std::cout << std::endl;
+//		std::cout << "\n";
 //
 //		break;
 //
@@ -933,14 +980,14 @@ bool Player::attack(Monster* monster[])
 //	{
 //		if (mClassName == "Fighter" || mClassName == "Thief")
 //		{
-//			std::cout << "It seems you haven't quite mastered the magical arts... Choose another selection" << std::endl;
+//			std::cout << "It seems you haven't quite mastered the magical arts... choose another selection" << "\n";
 //
 //			break;
 //		}
 //
 //		// else you have magic to use
-//		std::cout << "Magical spells you currently have." << std::endl;
-//		std::cout << "----------------------------------" << std::endl;
+//		std::cout << "Magical spells you currently have." << "\n";
+//		std::cout << "----------------------------------" << "\n";
 //
 //		// list what spells this player has as choices.
 //		for (int i = 0; i < mMagicSpellsKnown.size(); i++)
@@ -954,8 +1001,8 @@ bool Player::attack(Monster* monster[])
 //
 //		}
 //
-//		std::cout << std::endl;
-//		std::cout << "----------------------------------" << std::endl << std::endl;
+//		std::cout << "\n";
+//		std::cout << "----------------------------------" << "\n" << "\n";
 //
 //		std::cout << "Enter the number of the spell you wish to cast: ";
 //
@@ -969,7 +1016,7 @@ bool Player::attack(Monster* monster[])
 //		// take action IF user has enough mana to cast the spell... else loop out and try again
 //		if ((spellSelection < 0 || spellSelection > mMagicSpellsKnown.size()) || mMagicSpellsKnown[spellSelection].mRequiredLevel > mLevel)
 //		{
-//			std::cout << "You dont have a spell for [" << spellSelection << "]. Try selecting a spell you can use!" << std::endl;
+//			std::cout << "You don't have a spell for [" << spellSelection << "]. Try selecting a spell you can use!" << "\n";
 //		}
 //		else if (mMagicPoints >= mMagicSpellsKnown[spellSelection].mMagicPointsRequired && mMagicSpellsKnown[spellSelection].mRequiredLevel <= mLevel)
 //		{
@@ -979,7 +1026,7 @@ bool Player::attack(Monster* monster[])
 //				int spellDamage = Random(mMagicSpellsKnown[spellSelection].mDamageRange);
 //				monster.takeDamage(spellDamage);
 //
-//				std::cout << "You hit the " << monster.getName() << ", with the " << mMagicSpellsKnown[spellSelection].mName << " spell. Dealing " << spellDamage << " magical damage to them." << std::endl;
+//				std::cout << "You hit the " << monster.getName() << ", with the " << mMagicSpellsKnown[spellSelection].mName << " spell. Dealing " << spellDamage << " magical damage to them." << "\n";
 //
 //				// update mMagicPoints
 //				mMagicPoints -= mMagicSpellsKnown[spellSelection].mMagicPointsRequired;
@@ -992,7 +1039,7 @@ bool Player::attack(Monster* monster[])
 //
 //
 //
-//				std::cout << "Casting the " << mMagicSpellsKnown[spellSelection].mName << " spell. You heal yourself for " << healingAmount << " damage." << std::endl;
+//				std::cout << "Casting the " << mMagicSpellsKnown[spellSelection].mName << " spell. You heal yourself for " << healingAmount << " damage." << "\n";
 //
 //				// update mMagicPoints
 //				mMagicPoints -= mMagicSpellsKnown[spellSelection].mMagicPointsRequired;
@@ -1003,13 +1050,13 @@ bool Player::attack(Monster* monster[])
 //		}
 //		else
 //		{
-//			std::cout << "You dont have enough \"Magic Points\" to cast " << mMagicSpellsKnown[spellSelection].mName << std::endl;
-//			//std::cout << "Make another selection." << std::endl;
+//			std::cout << "You don't have enough \"Magic Points\" to cast " << mMagicSpellsKnown[spellSelection].mName << "\n";
+//			//std::cout << "Make another selection." << "\n";
 //
 //		}
 //
 //
-//		std::cout << std::endl;
+//		std::cout << "\n";
 //
 //		break;
 //	}
@@ -1019,13 +1066,13 @@ bool Player::attack(Monster* monster[])
 //		{
 //
 //		}
-//		std::cout << "DEBUG MSG POTION COUNT" << std::endl;
-//		std::cout << "potions before: " << mPotionsOwned.size() << std::endl;
+//		std::cout << "DEBUG MSG POTION COUNT" << "\n";
+//		std::cout << "potions before: " << mPotionsOwned.size() << "\n";
 //
 //
 //		if (mPotionsOwned.size() == 0)
 //		{
-//			std::cout << "You look for a potion, but you have none it seems." << std::endl << std::endl;
+//			std::cout << "You look for a potion, but you have none it seems." << "\n" << "\n";
 //
 //			break; // you have no potions
 //		}
@@ -1033,7 +1080,7 @@ bool Player::attack(Monster* monster[])
 //
 //		if (mHitPoints == mMaxHitPoints)
 //		{
-//			std::cout << "You have full hitpoints, you dont need to use that potion right now." << std::endl << std::endl;
+//			std::cout << "You have full hit points, you don't need to use that potion right now." << "\n" << "\n";
 //
 //			break;
 //		}
@@ -1052,8 +1099,8 @@ bool Player::attack(Monster* monster[])
 //
 //		if (debugLog.enableDebugMessages)
 //		{
-//			std::cout << "DEBUG MSG POTION COUNT" << std::endl;
-//			std::cout << "potions after: " << mPotionsOwned.size() << std::endl;
+//			std::cout << "DEBUG MSG POTION COUNT" << "\n";
+//			std::cout << "potions after: " << mPotionsOwned.size() << "\n";
 //		}
 //
 //
@@ -1065,13 +1112,13 @@ bool Player::attack(Monster* monster[])
 //
 //		if (mClassName == "Thief")
 //		{
-//			// 50% chance of being able to run, if your a sneaky thief
+//			// 50% chance of being able to run, if you're a sneaky thief
 //			roll = Random(2, 4);
 //
 //			if (debugLog.enableDebugMessages)
 //			{
-//				std::cout << "DEBUG MSG" << std::endl;
-//				std::cout << "run roll thief: " << roll << std::endl;
+//				std::cout << "DEBUG MSG" << "\n";
+//				std::cout << "run roll thief: " << roll << "\n";
 //			}
 //
 //		}
@@ -1084,19 +1131,19 @@ bool Player::attack(Monster* monster[])
 //
 //		if ((roll == 1 || roll == 2) && mClassName == "Thief")
 //		{
-//			std::cout << "You run away!" << std::endl;
+//			std::cout << "You run away!" << "\n";
 //
 //			return true; // return out of the function
 //		}
 //		else if (roll == 1)
 //		{
-//			std::cout << "You run away!" << std::endl;
+//			std::cout << "You run away!" << "\n";
 //
 //			return true; // return out of the function
 //		}
 //		else
 //		{
-//			std::cout << "You could not escape!" << std::endl;
+//			std::cout << "You could not escape!" << "\n";
 //			break;
 //		}
 //	} // end case 4
@@ -1106,297 +1153,329 @@ bool Player::attack(Monster* monster[])
 //}
 
 
-void Player::levelUp()
+void player::level_up()
 {
-	if (debugLog.enableDebugMessages)
+	if (debug_log.enable_debug_messages)
 	{
-		if (mExpPoints > mNextLevelExp)
-			std::cout << "you can level now" << std::endl;
+		if (m_exp_points_ > m_next_level_exp_)
+			std::cout << "you can level now" << "\n";
 	}
 	
 
-	bool test = (mExpPoints > mNextLevelExp);
+	bool test = (m_exp_points_ > m_next_level_exp_);
 	{
-		if (debugLog.enableDebugMessages)
+		if (debug_log.enable_debug_messages)
 		{
-			std::cout.setf(std::cout.boolalpha);
-			std::cout << "test = " << test << ", true means test works, while loop does not." << std::endl;
+			///std::cout.setf(std::cout.boolalpha);
+			std::cout.setf(std::ostream::boolalpha);
+			std::cout << "test = " << test << ", true means test works, while loop does not." << "\n";
 		}
 	}
 
 
-	while(mExpPoints > mNextLevelExp)
+	while(m_exp_points_ > m_next_level_exp_)
 	{
-		std::cout << "You gained a level!" << std::endl;
+		std::cout << "You gained a level!" << "\n";
 
 		// increment level
-		mLevel++;
+		m_level_++;
 
-		// set experience points required for next level
-		mNextLevelExp = mLevel * mLevel * 1000; // need to modify this to use better leveling add later
+		// set experience points required for the next level
+		m_next_level_exp_ = m_level_ * m_level_ * 1000; // need to modify this to use better leveling add later
 
 		// increase stats randomly
-		if (mLevel > 20)
+		if (m_level_ > 20)
 		{
-			mAccuracy += Random(1, 3);
-			mMaxHitPoints += Random(5, 12);
-			setArmorBonus(Random(1, 2));
+			m_accuracy_ += random(1, 3);
+			m_max_hit_points_ += random(5, 12);
+			set_armor_bonus(random(1, 2));
 		}
-		else if (mLevel > 10)
+		else if (m_level_ > 10)
 		{
-			mAccuracy += Random(1, 3);
-			mMaxHitPoints += Random(2, 9);
-			setArmorBonus(Random(1, 2));
+			m_accuracy_ += random(1, 3);
+			m_max_hit_points_ += random(2, 9);
+			set_armor_bonus(random(1, 2));
 		}
 		else
 		{
-			mAccuracy += Random(1, 3);
-			mMaxHitPoints += Random(2, 6);
-			setArmorBonus(Random(1, 2));
+			m_accuracy_ += random(1, 3);
+			m_max_hit_points_ += random(2, 6);
+			set_armor_bonus(random(1, 2));
 		}
 
 		// class bonus stats
-		int tempAc = 0, tempHp = 0, tempAcc = 0, tempDamLow = 0, tempDamHigh = 0, tempMagicLow = 0, tempMagicHigh = 0;
+		int temp_ac, temp_hp, temp_acc, temp_dam_low, temp_dam_high, temp_magic_low = 0, temp_magic_high = 0;
 
 
-		if (mClassName == "Fighter")
+		if (m_class_name_ == "Fighter")
 		{
-			tempHp = Random(1, 3);
-			tempAc = Random(0, 2);
-			tempAcc = (mLevel % 4 == 0 ? 1 : 0); // if level divided by 4 is 0, add 1 else add 0
+			temp_hp = random(1, 3);
+			temp_ac = random(0, 4);
+			temp_acc = (m_level_ % 4 == 0 ? random(1, 3) : 0); // if the level divided by 4 is 0, add 1 else adding 0
 
-			if (mLevel > 10)
+			if (m_level_ > 10)
 			{
-				tempDamLow = Random(0, 2);
-				tempDamHigh = Random(1, 4);
+				temp_dam_low = random(0, 2);
+				temp_dam_high = random(1, 4);
 			}
 			else
 			{
-				tempDamLow = Random(0, 1);
-				tempDamHigh = Random(0, 2);
+				temp_dam_low = random(0, 1);
+				temp_dam_high = random(0, 2);
 			}
 			
 			//tempMagicLow = 0;
 			//tempMagicHigh = 0;
 		}
-		else if (mClassName == "Wizard")
+		else if (m_class_name_ == "Wizard")
 		{
-			tempHp = (mLevel % 2 == 0 ? Random(0, 2) : 0); // if level divided by 2 is 0 add 1 to 3 hps else 0
-			tempAc = (mLevel % 3 == 0 ? 1 : 0); // if level divided by 3 is 0 add 1 ac point else 0
-			tempAcc = 0;
-			tempDamLow = Random(0, 1);
-			tempDamHigh = Random(0, 2);
+			temp_hp = (m_level_ % 2 == 0 ? random(0, 2) : 0); // if the level divided by 2 is 0, add 1 to 3 hps else 0
+			temp_ac = (m_level_ % 3 == 0 ? random(1, 2) : 0); // if the level divided by 3 is 0, add 1 ac point else 0
+			temp_acc = random(0, 3);
+			temp_dam_low = random(0, 2);
+			temp_dam_high = random(0, 3);
 
-			if (mLevel % 3 == 0)
+			m_max_magic_points_ += random(3, 8);
+			m_magic_points_ = m_max_magic_points_; // reset magic points to max
+
+			if (m_level_ % 3 == 0)
 			{
-				tempMagicLow += Random(0, 1);
-				tempMagicHigh += Random(0, 1);
+				temp_magic_low += random(0, 3);
+				temp_magic_high += random(1, 4);
 
-				if (debugLog.enableDebugMessages)
+				if (debug_log.enable_debug_messages)
 				{
-					std::cout << "DEBUG MSGS" << std::endl;
-					std::cout << "magicLow [" << tempMagicLow << "]" << std::endl;
-					std::cout << "magicHigh [" << tempMagicHigh << "]" << std::endl;
+					std::cout << "DEBUG messages" << "\n";
+					std::cout << "magic damage Low [" << temp_magic_low << "]" << "\n";
+					std::cout << "magic damage High [" << temp_magic_high << "]" << "\n";
 				}
 				
 
-				increaseSpellManaCost();
+				increase_spell_mana_cost();
 			}
 
 
-			// iterate over all spells and update them, if you have any
-			for (int i = 0; i < mMagicSpellsKnown.size(); i++)
+			// iterate over all spells and update them if you have any
+			for (auto& i : m_magic_spells_known_)
 			{
 				// update spell data
-				mMagicSpellsKnown[i].mDamageRange.mLow += tempMagicLow;
-				mMagicSpellsKnown[i].mDamageRange.mHigh += tempMagicHigh;
+				i.m_damage_range.m_low += temp_magic_low;
+				i.m_damage_range.m_high += temp_magic_high;
 
-				// low damage can't be higher then high damage
-				if (mMagicSpellsKnown[i].mDamageRange.mLow > mMagicSpellsKnown[i].mDamageRange.mHigh)
+				// low damage can't be higher than high damage
+				/*if (m_magic_spells_known_[i].m_damage_range.m_low > m_magic_spells_known_[i].m_damage_range.m_high)
 				{
-					mMagicSpellsKnown[i].mDamageRange.mLow = mMagicSpellsKnown[i].mDamageRange.mHigh;
-				}
+					m_magic_spells_known_[i].m_damage_range.m_low = m_magic_spells_known_[i].m_damage_range.m_high;
+				}*/
+				i.m_damage_range.m_low = std::min(i.m_damage_range.m_low, i.m_damage_range.m_high);
 			}
 
 
 		}
-		else if (mClassName == "Cleric")
+		else if (m_class_name_ == "Cleric")
 		{
-			tempHp = Random(0, 3);
-			tempAc = 1;
-			tempAcc = Random(0, 1);
-			tempDamLow = Random(0, 1);
-			tempDamHigh = Random(0, 1);
+			temp_hp = random(0, 3);
+			temp_ac = random(1, 3);
+			temp_acc = random(0, 1);
+			temp_dam_low = random(0, 1);
+			temp_dam_high = random(0, 3);
 
-			if (mLevel % 3 == 0)
+			m_max_magic_points_ += random(1, 6);
+			m_magic_points_ = m_max_magic_points_; // reset magic points to max
+
+			if (m_level_ % 3 == 0)
 			{
-				tempMagicLow += Random(0, 1);
-				tempMagicHigh += Random(0, 1);
+				temp_magic_low += random(0, 2);
+				temp_magic_high += random(0, 4);
 
-				if (debugLog.enableDebugMessages)
+				if (debug_log.enable_debug_messages)
 				{
-					std::cout << "DEBUG MSGS" << std::endl;
-					std::cout << "magicLow [" << tempMagicLow << "]" << std::endl;
-					std::cout << "magicHigh [" << tempMagicHigh << "]" << std::endl;
+					std::cout << "DEBUG messages" << "\n";
+					std::cout << "magicLow [" << temp_magic_low << "]" << "\n";
+					std::cout << "magicHigh [" << temp_magic_high << "]" << "\n";
 				}
 
-				increaseSpellManaCost();
+				increase_spell_mana_cost();
 			}
 			
-			// iterate over all spells and update them, if you have any
-			for (int i = 0; i < mMagicSpellsKnown.size(); i++)
+			// iterate over all spells and update them if you have any
+			//for (int i = 0; i < m_magic_spells_known_.size(); i++)
+			for (auto& i : m_magic_spells_known_)
 			{
 				
 				// update spell data
-				mMagicSpellsKnown[i].mDamageRange.mLow += tempMagicLow;
-				mMagicSpellsKnown[i].mDamageRange.mHigh += tempMagicHigh;
+				i.m_damage_range.m_low += temp_magic_low;
+				i.m_damage_range.m_high += temp_magic_high;
 
-				// low damage can't be higher then high damage
-				if (mMagicSpellsKnown[i].mDamageRange.mLow > mMagicSpellsKnown[i].mDamageRange.mHigh)
+				// low damage can't be higher than high damage
+				/*if (m_magic_spells_known_[i].m_damage_range.m_low > m_magic_spells_known_[i].m_damage_range.m_high)
 				{
-					mMagicSpellsKnown[i].mDamageRange.mLow = mMagicSpellsKnown[i].mDamageRange.mHigh;
-				}
+					m_magic_spells_known_[i].m_damage_range.m_low = m_magic_spells_known_[i].m_damage_range.m_high;
+				}*/
+				i.m_damage_range.m_low = std::min(i.m_damage_range.m_low, i.m_damage_range.m_high);
 			}
 		}
 		else // thief
 		{
-			tempHp = (mLevel % 2 == 0 ? Random(0, 2) : 0); // if level divided by 2 is 0, add 1 to 4 hps, else 0
-			tempAc = Random(0, 1);
-			tempAcc = Random(0, 1);
+			temp_hp = (m_level_ % 2 == 0 ? random(0, 2) : 0); // if the level divided by 2 is 0, add 1 to 4 hps, else 0
+			temp_ac = random(0, 1);
+			temp_acc = random(0, 1);
 
-			if (mLevel > 10)
+			if (m_level_ > 10)
 			{
-				tempDamLow = Random(0, 3);
-				tempDamHigh = Random(1, 4);
+				temp_dam_low = random(0, 3);
+				temp_dam_high = random(1, 4);
 			}
 			else
 			{
-				tempDamLow = Random(0, 1);
-				tempDamHigh = Random(0, 2);
+				temp_dam_low = random(0, 1);
+				temp_dam_high = random(0, 2);
 			}
 
 		}
 
 		// debug class bonuses
-		if (debugLog.enableDebugMessages)
+		if (debug_log.enable_debug_messages)
 		{
-			std::cout << "DEBUG MSGS" << std::endl;
-			std::cout << "Class Bonuses from leveling" << std::endl;
-			std::cout << "Max Hit Points: " << tempHp << std::endl;
-			std::cout << "Armor: " << tempAc << std::endl;
-			std::cout << "Accuracy: " << tempAcc << std::endl;
-			std::cout << "Weapon Damage Low: " << tempDamLow << std::endl;
-			std::cout << "Weapon Damage High: " << tempDamHigh << std::endl;
-			std::cout << "Magic Damage Low: " << tempMagicLow << std::endl;
-			std::cout << "Magic Damage High: " << tempMagicHigh << std::endl;
+			std::cout << "DEBUG messages" << "\n";
+			std::cout << "Class Bonuses from leveling" << "\n";
+			std::cout << "Max Hit Points: " << temp_hp << "\n";
+			std::cout << "Armor: " << temp_ac << "\n";
+			std::cout << "Accuracy: " << temp_acc << "\n";
+			std::cout << "Weapon Damage Low: " << temp_dam_low << "\n";
+			std::cout << "Weapon Damage High: " << temp_dam_high << "\n";
+			std::cout << "Magic Damage Low: " << temp_magic_low << "\n";
+			std::cout << "Magic Damage High: " << temp_magic_high << "\n";
 		}
 		
 
 
 		// update stats
-		mMaxHitPoints += tempHp;
-		setArmorBonus(tempAc);
+		m_max_hit_points_ += temp_hp;
+		set_armor_bonus(temp_ac);
 		
-		mAccuracy += tempAcc;
-		setWeaponBonus(tempDamLow, tempDamHigh);
+		m_accuracy_ += temp_acc;
 
-		setMagicBonusDamage(tempMagicLow, tempMagicHigh);
+		if (temp_dam_low > temp_dam_high)
+		{
+			const int temp = temp_dam_low;
+			temp_dam_low = temp_dam_high;
+			temp_dam_high = temp;
+		}
+		set_weapon_bonus(temp_dam_low, temp_dam_high);
+
+		
+		if (temp_magic_low > temp_magic_high)
+		{
+			const int temp = temp_magic_low;
+			temp_magic_low = temp_magic_high;
+			temp_magic_high = temp;
+		}
+		set_magic_bonus_damage(temp_magic_low, temp_magic_high);
 
 
 		// update armor & weapon damage & magic damage
-		calculateArmor();
-		calculateWeaponDamage();
-		calculateMagicDamage();
+		calculate_armor();
+		calculate_weapon_damage();
+		calculate_magic_damage();
 
 
-		// give player full hitpoints when they level up.
-		mHitPoints = mMaxHitPoints;
-		mMagicPoints = mMaxMagicPoints;
+		// give player full hit points when they level up.
+		m_hit_points_ = m_max_hit_points_;
+		m_magic_points_ = m_max_magic_points_;
 
 
-		if (debugLog.enableDebugMessages)
+		if (debug_log.enable_debug_messages)
 		{
-			std::cout << "current exp: " << mExpPoints << ", exp needed to level: " << mNextLevelExp << std::endl;
+			std::cout << "current exp: " << m_exp_points_ << ", exp needed to level: " << m_next_level_exp_ << "\n";
 		}
 		
-		if (debugLog.enableDebugMessages)
+		if (debug_log.enable_debug_messages)
 		{
-			std::cout << "test = " << test << ", true = quit, while loop will loop again" << std::endl;
-			test = (mExpPoints > mNextLevelExp);
+			std::cout << "test = " << test << ", true = quit, while loop will loop again" << "\n";
+			test = (m_exp_points_ > m_next_level_exp_);
 		}
 		
 	} 
 }
 
-int Player::getLevel()
+int player::get_level() const
 {
-	return mLevel;
+	return m_level_;
 }
 
-void Player::rest()
+void player::rest()
 {
-	std::cout << "Resting... your health and magic have recovered!" << std::endl;
+	std::cout << "Your health and magic have recovered!" << "\n";
 
-	mHitPoints = mMaxHitPoints;
-	mMagicPoints = mMaxMagicPoints;
+	m_hit_points_ = m_max_hit_points_;
+	m_magic_points_ = m_max_magic_points_;
 }
 
-void Player::viewStates()
+void player::view_states() const
 {
-	std::cout << "PLAYER STATS" << std::endl;
-	std::cout << "============" << std::endl;
-	std::cout << std::endl;
+	std::cout << "PLAYER STATS" << "\n";
+	std::cout << "============" << "\n";
+	std::cout << "\n";
 
-	std::cout << "Name = " << mName << std::endl;
-	std::cout << "Race = " << mRaceName << std::endl;
-	std::cout << "Class = " << mClassName << std::endl;
-	std::cout << "Accuracy = " << mAccuracy << std::endl;
-	std::cout << "Hit Points = " << mHitPoints << std::endl;
-	std::cout << "Max Hit Points = " << mMaxHitPoints << std::endl;
+	std::cout << "Name = " << m_name_ << "\n";
+	std::cout << "Race = " << m_race_name_ << "\n";
+	std::cout << "Class = " << m_class_name_ << "\n";
+	std::cout << "Accuracy = " << m_accuracy_ << "\n";
+	std::cout << "Hit Points = " << m_hit_points_ << "\n";
+	std::cout << "Max Hit Points = " << m_max_hit_points_ << "\n";
 
-	if(mClassName == "Wizard" || mClassName == "Cleric")
+	if(m_class_name_ == "Wizard" || m_class_name_ == "Cleric")
 	{
-		std::cout << "Magic Points = " << mMagicPoints << std::endl;
-		std::cout << "Max Magic Points = " << mMaxMagicPoints << std::endl;
+		std::cout << "Magic Points = " << m_magic_points_ << "\n";
+		std::cout << "Max Magic Points = " << m_max_magic_points_ << "\n";
 	}
 	
-	std::cout << "XP = " << mExpPoints << std::endl;
-	std::cout << "XP for Next Lvl = " << mNextLevelExp << std::endl;
-	std::cout << "Level = " << mLevel << std::endl;
-	std::cout << "Gold = " << mGold << std::endl;
-	std::cout << "# of Healing Potions = " << mPotionsOwned.size() << std::endl;
-	std::cout << "Armor = " << mArmor << std::endl;
-	std::cout << "Armor Name = " << mArmorWorn.mName << std::endl;
-	std::cout << "Armor Value = " << mArmorWorn.mArmorValue << std::endl;
-	std::cout << "Weapon Name = " << mWeaponHeld.mName << std::endl;
-	std::cout << "Weapon Damage = " << mWeaponHeld.mDamageRange.mLow << " - " << mWeaponHeld.mDamageRange.mHigh << std::endl;
+	std::cout << "XP = " << m_exp_points_ << "\n";
+	std::cout << "XP for Next Lvl = " << m_next_level_exp_ << "\n";
+	std::cout << "Level = " << m_level_ << "\n";
+	std::cout << "Gold = " << m_gold_ << "\n";
+	std::cout << "# of Healing Potions = " << m_potions_owned_.size() << "\n";
+	std::cout << "Armor = " << m_armor_ << "\n";
+	std::cout << "Armor Name = " << m_armor_worn_.m_name << "\n";
+	std::cout << "Armor Value = " << m_armor_worn_.m_armor_value << "\n";
+	std::cout << "Weapon Name = " << m_weapon_held_.m_name << "\n";
+	std::cout << "Weapon Damage = " << m_weapon_held_.m_damage_range.m_low << " - " << m_weapon_held_.m_damage_range.m_high << "\n";
 	
 
-	std::cout << std::endl;
+	std::cout << "\n";
 
-	if (mClassName == "Wizard" || mClassName == "Cleric")
+	if (m_class_name_ == "Wizard" || m_class_name_ == "Cleric")
 	{
-		std::cout << "----------------------------" << std::endl;
-		std::cout << "-    Known Magic Spells    -" << std::endl;
-		std::cout << "----------------------------" << std::endl << std::endl;
+		std::cout << "----------------------------" << "\n";
+		std::cout << "-    Known Magic Spells    -" << "\n";
+		std::cout << "----------------------------" << "\n" << "\n";
 
-		if (mMagicSpellsKnown.size() > 0)
+		//if (m_magic_spells_known_.size() > 0)
+		if (!m_magic_spells_known_.empty())
 		{
-			for (int i = 0; i < mMagicSpellsKnown.size(); i++)
+			for (size_t i = 0; i < m_magic_spells_known_.size(); i++)
 			{
-				if (mMagicSpellsKnown[i].mRequiredLevel <= mLevel)
+				if (m_magic_spells_known_[i].m_required_level <= m_level_)
 				{
-					std::cout << i << ") " << mMagicSpellsKnown[i].mName << " (Low: " << mMagicSpellsKnown[i].mDamageRange.mLow << ", High: " << mMagicSpellsKnown[i].mDamageRange.mHigh << ")" << " <> Spell Cost: " << mMagicSpellsKnown[i].mMagicPointsRequired << std::endl;
+					std::cout << i << ") " << m_magic_spells_known_[i].m_name << " (Low: " << m_magic_spells_known_[i].m_damage_range.m_low << ", High: " << m_magic_spells_known_[i].m_damage_range.m_high << ")" << " <> Spell Cost: " << m_magic_spells_known_[i].m_magic_points_required << "\n";
+
+					if (i < m_magic_spells_known_.size() - 1)
+					{
+						std::cout << "\n";
+					}
 				}
 				
 			}
 
-			std::cout << std::endl;
-			std::cout << "----------------------------" << std::endl;
+			
+
+			std::cout << "\n";
+			std::cout << "----------------------------" << "\n";
 		}
 		else
 		{
-			std::cout << "You have no spells." << std::endl << std::endl;
+			std::cout << "You have no spells." << "\n" << "\n";
 		}
 
 
@@ -1404,16 +1483,16 @@ void Player::viewStates()
 	
 	
 
-	std::cout << "END PLAYER STATS" << std::endl;
-	std::cout << "===============" << std::endl;
-	std::cout << std::endl;
+	std::cout << "END PLAYER STATS" << "\n";
+	std::cout << "===============" << "\n";
+	std::cout << "\n";
 }
 
-void Player::victory(int xp, int gold)
+void player::victory(int xp, int gold)
 {
 
 
-	if (debugLog.enableDebugMessages)
+	if (debug_log.enable_debug_messages)
 	{
 		// TESTING CHANGE ONLY
 		//xp *= mRewardModifier;
@@ -1424,45 +1503,58 @@ void Player::victory(int xp, int gold)
 		// ---=-=-=-=-=================================================================================================================================
 	}
 	
-	xp *= mRewardModifier;
-	gold *= mRewardModifier;
+	xp *= m_reward_modifier_;
+	gold *= m_reward_modifier_;
 
 
-	std::cout << "You won the battle!" << std::endl;
-	std::cout << "You win " << xp << " experience points!" << std::endl;
-	std::cout << "You win " << gold << " gold coins!" << std::endl << std::endl;
+	std::cout << "You won the battle!" << "\n";
+	std::cout << "You win " << xp << " experience points!" << "\n";
+	std::cout << "You win " << gold << " gold coins!" << "\n" << "\n";
 
 	//mExpPoints += xp;
-	mExpPoints += xp;
+	m_exp_points_ += xp;
 	//mGold += gold;
-	mGold += gold;
+	m_gold_ += gold;
 }
 
-void Player::gameover()
+void player::gameOver()
 {
-	std::cout << "You died in battle..." << std::endl;
-	std::cout << std::endl;
-	std::cout << "======================" << std::endl;
-	std::cout << "=     GAME OVER!    =" << std::endl;
-	std::cout << "======================" << std::endl;
+	std::cout << "You died in battle..." << "\n";
+	std::cout << "\n";
+	std::cout << "======================" << "\n";
+	std::cout << "=     GAME OVER!    =" << "\n";
+	std::cout << "======================" << "\n";
 	std::cout << "Press 'q' to quit: ";
 	char q = 'q';
 	std::cin >> q;
-	std::cout << std::endl;
+	std::cout << "\n";
 }
 
-void Player::displayHitPoints()
+void player::display_hit_points() const
 {
-	std::cout << mName << "'s hitpoints = " << mHitPoints;
+	std::cout << m_name_ << "'s hit points = " << m_hit_points_;
 }
 
-void Player::displayMagicPoints()
+void player::display_magic_points() const
 {
-	std::cout << ", magicpoints = " << mMagicPoints;
+	std::cout << ", magic points = " << m_magic_points_;
 }
 
-Player::~Player()
+size_t player::get_number_of_owned_spells() const
 {
+	size_t spell_count = 0;
 
+	for (const auto& i : m_magic_spells_known_)
+	{
+		if (i.m_required_level <= m_level_)
+		{
+			spell_count++;
+		}
+	}
+
+	return spell_count;
+	
 }
+
+player::~player() = default;
 

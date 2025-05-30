@@ -4,23 +4,31 @@
 #include "Player.h"
 #include "Armor.h"
 #include "Weapon.h"
-#include <string>
+//#include <string>
 #include <vector>
 
 
-class Store
+class store
 {
 public:
-	Store();
-	void enter(Player& player);
+	store();
+
+	// disable copy constructor and assignment operator
+	store(const store& other) = delete;
+	store& operator=(const store& other) = delete;
+	store(store&& other) noexcept = delete;
+	store& operator=(store&& other) noexcept = delete;
+
+	
+	void enter(player& player);
 
 
-	~Store();
+	~store();
 
 
 private:
-	std::vector<Armor> mArmorObjects;
-	std::vector<Weapon> mWeaponObjects;
+	std::vector<armor> m_armor_objects_;
+	std::vector<weapon> m_weapon_objects_;
 
 
 };

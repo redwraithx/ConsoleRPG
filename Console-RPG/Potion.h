@@ -4,10 +4,10 @@
 
 #include "Range.h"
 
-struct Potion
+struct potion
 {
-	Range mPotionValue;
-	int mSellValue;
+	range m_potion_value;
+	int m_sell_value;
 };
 
 

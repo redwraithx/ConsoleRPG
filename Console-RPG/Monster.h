@@ -6,36 +6,38 @@
 #include "Weapon.h"
 #include <string>
 
-class Player;
+class player;
 
 class Monster
 {
 public:
 
-	Monster(const std::string& name, int hp, int acc, int xpReward, int goldReward, int armor, const std::string& weaponName, int lowDamage, int highDamage);
+	Monster(const std::string& name, int min_player_level, int hp, int acc, int xp_reward, int gold_reward, int armor, const std::string& weapon_name, int low_damage, int high_damage);
 
-	bool isDead();
+	bool is_dead() const;
 
-	int getXPReward();
-	int getGoldReward();
-	std::string getName();
-	int getArmor();
+	int get_xp_reward() const;
+	int get_gold_reward() const;
+	std::string get_name();
+	int get_min_player_level() const;
+	int get_armor() const;
 
-	void attack(Player& player, int monsterToAttack);
-	void takeDamage(int damage);
-	void displayHitPoints();
+	void attack(player& player) const;
+	void take_damage(int damage);
+	void display_hit_points() const;
 
 
 	~Monster();
 
 private:
-	std::string mName;
-	int mHitPoints;
-	int mAccuracy;
-	int mExpReward;
-	int mGoldReward;
-	int mArmor;
-	Weapon mWeapon;
+	std::string m_name_;
+	int m_min_player_level_;
+	int m_hit_points_;
+	int m_accuracy_;
+	int m_exp_reward_;
+	int m_gold_reward_;
+	int m_armor_;
+	weapon m_weapon_;
 
 
 };

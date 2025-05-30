@@ -1,11 +1,11 @@
-//#include <iostream>
+///#include <iostream>
 //
 //#include "Wiz.h"
 //
 //
 //Wizard::Wizard()
 //{
-//	// client called constructor with zero parameter,
+//	// client called constructor with zero parameters,
 //	// so construct a "wizard" with default values.
 //	// we call this a "default" constructor
 //	mName = "DefaultName";
@@ -26,6 +26,6 @@
 //
 //Wizard::~Wizard()
 //{
-//	// no dynamic memory to delete--nothing to cleanup.
+//	// no dynamic memory to delete--nothing to clean up.
 //}
 //

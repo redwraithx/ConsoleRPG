@@ -2,15 +2,15 @@
 #include "Magic.h"
 
 
-Spell addSpell(std::string name, int damageLow, int damageHigh, int requiredLevel, int magicPointsRequired)
+spell add_spell(const std::string& name, const int damage_low, const int damage_high, const int required_level, const int magic_points_required)
 {
-	Spell newSpell;
+	spell new_spell;
 
-	newSpell.mName = name;
-	newSpell.mDamageRange.mLow = damageLow;
-	newSpell.mDamageRange.mHigh = damageHigh;
-	newSpell.mRequiredLevel = requiredLevel;
-	newSpell.mMagicPointsRequired = magicPointsRequired;
+	new_spell.m_name = name;
+	new_spell.m_damage_range.m_low = damage_low;
+	new_spell.m_damage_range.m_high = damage_high;
+	new_spell.m_required_level = required_level;
+	new_spell.m_magic_points_required = magic_points_required;
 
-	return newSpell;
+	return new_spell;
 }

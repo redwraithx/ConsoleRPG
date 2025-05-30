@@ -5,85 +5,89 @@
 #include <iostream>
 
 
-Monster::Monster(const std::string& name, int hp, int acc, int xpReward, int goldReward, int armor, const std::string& weaponName, int lowDamage, int highDamage)
+Monster::Monster(const std::string& name, const int min_player_level, const int hp, const int acc, const int xp_reward, const int gold_reward, const int armor, const std::string& weapon_name, const int low_damage, const int high_damage)
 {
-	mName = name;
-	mHitPoints = hp;
-	mAccuracy = acc;
-	mExpReward = xpReward;
-	mGoldReward = goldReward;
-	mArmor = armor;
-	mWeapon.mName = weaponName;
-	mWeapon.mDamageRange.mLow = lowDamage;
-	mWeapon.mDamageRange.mHigh = highDamage;
+	m_name_ = name;
+	m_min_player_level_ = min_player_level;
+	m_hit_points_ = hp;
+	m_accuracy_ = acc;
+	m_exp_reward_ = xp_reward;
+	m_gold_reward_ = gold_reward;
+	m_armor_ = armor;
+	m_weapon_.m_name = weapon_name;
+	m_weapon_.m_damage_range.m_low = low_damage;
+	m_weapon_.m_damage_range.m_high = high_damage;
 
 }
 
-bool Monster::isDead()
+bool Monster::is_dead() const
 {
-	return mHitPoints <= 0;
+	return m_hit_points_ <= 0;
 }
 
-int Monster::getXPReward()
+int Monster::get_xp_reward() const
 {
-	return mExpReward;
+	return m_exp_reward_;
 }
 
-int Monster::getGoldReward()
+int Monster::get_gold_reward() const
 {
-	return mGoldReward;
+	return m_gold_reward_;
 }
 
-std::string Monster::getName()
+std::string Monster::get_name()
 {
-	return mName;
+	return m_name_;
 }
 
-int Monster::getArmor()
+int Monster::get_min_player_level() const
 {
-	return mArmor;
+	return m_min_player_level_;
 }
 
-void Monster::attack(Player& player, int monsterToAttack)
+int Monster::get_armor() const
 {
-	std::cout << "A " << mName << " attacks you with a " << mWeapon.mName << std::endl;
+	return m_armor_;
+}
 
-	if (Random(0, 20) < mAccuracy)
+void Monster::attack(player& player) const
+{
+	std::cout << "A " << m_name_ << " attacks you with a " << m_weapon_.m_name << '\n';
+
+	if (random(0, 20) < m_accuracy_)
 	{
-		int damage = Random(mWeapon.mDamageRange);
+		const int damage = random(m_weapon_.m_damage_range);
 
-		int totalDamage = damage - player.getArmor();
+		const int total_damage = damage - player.get_armor();
 
-		if (totalDamage <= 0)
+		if (total_damage <= 0)
 		{
-			std::cout << "The monster's attack failed to penetrate your armor." << std::endl;
+			std::cout << "The monster's attack failed to penetrate your armor." << '\n';
 		}
 		else
 		{
-			std::cout << "You are hit for " << totalDamage << " damage!" << std::endl;
+			std::cout << "You are hit for " << total_damage << " damage!" << '\n';
 
-			player.takeDamage(totalDamage);
+			player.take_damage(total_damage);
 		}
 
 	}
 	else
 	{
-		std::cout << "The " << mName << " missed!" << std::endl;
+		std::cout << "The " << m_name_ << " missed!" << '\n';
 	}
 
-	std::cout << std::endl;
+	std::cout << '\n';
 }
 
-void Monster::takeDamage(int damage)
+void Monster::take_damage(const int damage)
 {
-	mHitPoints -= damage;
+	m_hit_points_ -= damage;
 }
 
-void Monster::displayHitPoints()
+void Monster::display_hit_points() const
 {
-	std::cout << mName << "'s hitpoints = " << mHitPoints << std::endl;
+	std::cout << m_name_ << "'s hit points = " << m_hit_points_ << '\n';
 }
 
-Monster::~Monster()
-{
-}
+Monster::~Monster() = default;

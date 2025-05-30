@@ -9,372 +9,369 @@
 
 
 // Prototypes
-void InitArmors(std::vector<Armor>& armorsContainer, std::string playerClass);
-void InitWeapons(std::vector<Weapon>& weaponsContainer, std::string playerClass);
-Potion addPotion(int low, int high, int price);
+void init_armors(std::vector<armor>& armors_container, const std::string& player_class);
+void init_weapons(std::vector<weapon>& weapons_container, const std::string& player_class);
+potion add_potion(int low, int high, int price);
 
 
-void Store::enter(Player& player)
+void store::enter(player& player)
 {
 	// init weapons
-	InitWeapons(mWeaponObjects, player.getClass());
+	init_weapons(m_weapon_objects_, player.get_class());
 	// init armors
-	InitArmors(mArmorObjects, player.getClass());
+	init_armors(m_armor_objects_, player.get_class());
 
 
 
 	////////////////////////////////////////////////////////////////////
 	// DEBUG msg
-	if (debugLog.enableDebugMessages)
+	if (debug_log.enable_debug_messages)
 	{
-		std::cout << "debug message" << std::endl;
-		std::cout << "Weapon Bonus low: " << player.getWeaponBonux(true) << std::endl;
-		std::cout << "Weapon Bonus high: " << player.getWeaponBonux(false) << std::endl;
-		std::cout << std::endl;
+		std::cout << "debug message" << '\n';
+		std::cout << "Weapon Bonus low: " << player.get_weapon_bonus(true) << '\n';
+		std::cout << "Weapon Bonus high: " << player.get_weapon_bonus(false) << '\n';
+		std::cout << '\n';
 
-		std::cout << "original weapon low: " << player.getOriginalWeaponValue(true) << std::endl;
-		std::cout << "original weapon high: " << player.getOriginalWeaponValue(false) << std::endl;
-		std::cout << std::endl;
+		std::cout << "original weapon low: " << player.get_original_weapon_value(true) << '\n';
+		std::cout << "original weapon high: " << player.get_original_weapon_value(false) << '\n';
+		std::cout << '\n';
 	}
 
 
 
 	// player enters the store
-	std::cout << "You enter a blacksmiths shop. You see weapons and armors laid about." << std::endl;
+	std::cout << "You enter a blacksmiths shop. You see weapons and armors laid about." << '\n';
 
 	// display the store goods
-	bool exitStore = false;
+	bool exit_store = false;
 
-	while (!exitStore)
+	while (!exit_store)
 	{
 		
-		if (player.getGold() < 30) // cheapest item to buy value is a heal potion
+		if (player.get_gold() < 30) // the least expensive item to buy value is a healing potion
 		{
-			std::cout << "Hi Stranger... it seems you can't afford any of my stuff." << std::endl;
-			std::cout << "Come back later with more gold." << std::endl << std::endl;
+			std::cout << "Hi Stranger... it seems you can't afford any of my stuff." << '\n';
+			std::cout << "Come back later with more gold." << '\n' << '\n';
 
-			exitStore = true;
+			exit_store = true;
 
 			continue;
 		}
 
 
 		// store loop
-		std::cout << std::endl << "Welcome to my Store." << std::endl;
-		std::cout << "--------------------" << std::endl;
+		std::cout << '\n' << "Welcome to my Store." << '\n';
+		std::cout << "--------------------" << '\n';
 
 
 
-		std::cout << player.getName() << " you have " << player.getGold() << " gold coins." << std::endl;
+		std::cout << player.get_name() << " you have " << player.get_gold() << " gold coins." << '\n';
 		
-		std::cout << std::endl << "1) Weapons list, 2) Armors List, 3) Buy a Potion, 4) leave the Store: ";
-		int userInput = 1;
-		std::cin >> userInput;
+		std::cout << '\n' << "1) Weapons list, 2) Armors List, 3) Buy a Potion, 4) leave the Store: ";
+		int user_input = 1;
+		std::cin >> user_input;
 
 
 
-		switch (userInput)
+		switch (user_input)
 		{
 			case 1: // WEAPONS
 			{
-				bool exitWeapons = false;
+				bool exit_weapons = false;
 
-
-				
-
-
-				while (!exitWeapons)
+				while (!exit_weapons)
 				{
-					std::cout << std::endl;
+					std::cout << '\n';
 
 
 					// display the weapons for sale
-					std::cout << "Weapons List" << std::endl;
-					std::cout << "------------" << std::endl;
+					std::cout << "Weapons List" << '\n';
+					std::cout << "------------" << '\n';
 
 					int count = 0;
-					for (int i = 0; i < mWeaponObjects.size(); i++)
+					for (size_t i = 0; i < m_weapon_objects_.size(); i++)
 					{
-						std::cout << i << ") " << mWeaponObjects[i].mName << std::endl;
+						std::cout << i << ") " << m_weapon_objects_[i].m_name<< ", price: " << m_weapon_objects_[i].m_sell_value << '\n';
 
 						count++;
 					}
 
-					std::cout << count << ") Exit Weapons List" << std::endl;
+					std::cout << count << ") Exit Weapons List" << '\n';
 					std::cout << "Enter your selection: ";
 
-					int weaponSelection = 0;
-					std::cin >> weaponSelection;
+					int weapon_selection = 0;
+					std::cin >> weapon_selection;
 
-					switch (weaponSelection)
+					switch (weapon_selection)
 					{
 						case 0: // weapon 1
 						{
-							if (player.getGold() >= mWeaponObjects[weaponSelection].mSellValue)
+							if (player.get_gold() >= m_weapon_objects_[weapon_selection].m_sell_value)
 							{
 								// do you want to buy it?
 								std::cout << "Do you want to purchase this item? (y/n): ";
-								char userInput = 'n';
-								std::cin >> userInput;
+								char user_input2; // = 'n';
+								std::cin >> user_input2;
 
-								std::cout << std::endl;
+								std::cout << '\n';
 
-								switch (userInput)
+								switch (user_input2)
 								{
 								case 'y':
 								case 'Y':
 								{
-									std::cout << "Heres your new " << mWeaponObjects[weaponSelection].mName << ". Thanks for your purchase." << std::endl;
+									std::cout << "Here's your new " << m_weapon_objects_[weapon_selection].m_name << ". Thanks for your purchase." << '\n';
 
-									player.equipWeapon(mWeaponObjects[weaponSelection]);
-									player.buy(mWeaponObjects[weaponSelection].mSellValue);
+									player.equip_weapon(m_weapon_objects_[weapon_selection]);
+									player.buy(m_weapon_objects_[weapon_selection].m_sell_value);
 
-									player.calculateWeaponDamage();
+									player.calculate_weapon_damage();
 
 
-									std::cout << "You equip your new " << mWeaponObjects[weaponSelection].mName << std::endl;
+									std::cout << "You equip your new " << m_weapon_objects_[weapon_selection].m_name << '\n';
 
-									exitWeapons = true;
+									exit_weapons = true;
 
 									break;
 								}
 								default:
 								{
-									std::cout << "No worries, maybe next time." << std::endl;
+									std::cout << "No worries, maybe next time." << '\n';
 									break;
 								}
 								}
 							}
 							else
 							{
-								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << std::endl;
+								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << '\n';
 							}
 
 							break;
 						}
 						case 1: // weapon 2
 						{
-							if (player.getGold() >= mWeaponObjects[weaponSelection].mSellValue)
+							if (player.get_gold() >= m_weapon_objects_[weapon_selection].m_sell_value)
 							{
 								// do you want to buy it?
 								std::cout << "Do you want to purchase this item? (y/n): ";
-								char userInput = 'n';
-								std::cin >> userInput;
+								char user_input2 = 'n';
+								std::cin >> user_input2;
 
-								std::cout << std::endl;
+								std::cout << '\n';
 
-								switch (userInput)
+								switch (user_input2)
 								{
 								case 'y':
 								case 'Y':
 								{
-									std::cout << "Heres your new " << mWeaponObjects[weaponSelection].mName << ". Thanks for your purchase." << std::endl;
+									std::cout << "Here's your new " << m_weapon_objects_[weapon_selection].m_name << ". Thanks for your purchase." << '\n';
 
-									player.equipWeapon(mWeaponObjects[weaponSelection]);
-									player.buy(mWeaponObjects[weaponSelection].mSellValue);
+									player.equip_weapon(m_weapon_objects_[weapon_selection]);
+									player.buy(m_weapon_objects_[weapon_selection].m_sell_value);
 
-									player.calculateWeaponDamage();
+									player.calculate_weapon_damage();
 
 
-									std::cout << "You equip your new " << mWeaponObjects[weaponSelection].mName << std::endl;
+									std::cout << "You equip your new " << m_weapon_objects_[weapon_selection].m_name << '\n';
 
-									exitWeapons = true;
+									exit_weapons = true;
 
 									break;
 								}
 								default:
 								{
-									std::cout << "No worries, maybe next time." << std::endl;
+									std::cout << "No worries, maybe next time." << '\n';
 									break;
 								}
 								}
 							}
 							else
 							{
-								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << std::endl;
+								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << '\n';
 							}
 
 							break;
 						}
 						case 2: // weapon 3
 						{
-							if (player.getGold() >= mWeaponObjects[weaponSelection].mSellValue)
+							if (player.get_gold() >= m_weapon_objects_[weapon_selection].m_sell_value)
 							{
 								// do you want to buy it?
 								std::cout << "Do you want to purchase this item? (y/n): ";
-								char userInput = 'n';
-								std::cin >> userInput;
+								char user_input2 = 'n';
+								std::cin >> user_input2;
 
-								std::cout << std::endl;
+								std::cout << '\n';
 
-								switch (userInput)
+								switch (user_input2)
 								{
 								case 'y':
 								case 'Y':
 								{
-									std::cout << "Heres your new " << mWeaponObjects[weaponSelection].mName << ". Thanks for your purchase." << std::endl;
+									std::cout << "Here's your new " << m_weapon_objects_[weapon_selection].m_name << ". Thanks for your purchase." << '\n';
 
-									player.equipWeapon(mWeaponObjects[weaponSelection]);
-									player.buy(mWeaponObjects[weaponSelection].mSellValue);
+									player.equip_weapon(m_weapon_objects_[weapon_selection]);
+									player.buy(m_weapon_objects_[weapon_selection].m_sell_value);
 
-									player.calculateWeaponDamage();
+									player.calculate_weapon_damage();
 
 
-									std::cout << "You equip your new " << mWeaponObjects[weaponSelection].mName << std::endl;
+									std::cout << "You equip your new " << m_weapon_objects_[weapon_selection].m_name <<
+										'\n';
 
-									exitWeapons = true;
+									exit_weapons = true;
 
 									break;
 								}
 								default:
 								{
-									std::cout << "No worries, maybe next time." << std::endl;
+									std::cout << "No worries, maybe next time." << '\n';
 									break;
 								}
 								}
 							}
 							else
 							{
-								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << std::endl;
+								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << '\n';
 							}
 
 							break;
 						}
 						case 3: // weapon 4
 						{
-							if (player.getGold() >= mWeaponObjects[weaponSelection].mSellValue)
+							if (player.get_gold() >= m_weapon_objects_[weapon_selection].m_sell_value)
 							{
 								// do you want to buy it?
 								std::cout << "Do you want to purchase this item? (y/n): ";
-								char userInput = 'n';
-								std::cin >> userInput;
+								char user_input2; // = 'n';
+								std::cin >> user_input2;
 
-								std::cout << std::endl;
+								std::cout << '\n';
 
-								switch (userInput)
+								switch (user_input2)
 								{
 								case 'y':
 								case 'Y':
 								{
-									std::cout << "Heres your new " << mWeaponObjects[weaponSelection].mName << ". Thanks for your purchase." << std::endl;
+									std::cout << "Here's your new " << m_weapon_objects_[weapon_selection].m_name << ". Thanks for your purchase." << '\n';
 
-									player.equipWeapon(mWeaponObjects[weaponSelection]);
-									player.buy(mWeaponObjects[weaponSelection].mSellValue);
+									player.equip_weapon(m_weapon_objects_[weapon_selection]);
+									player.buy(m_weapon_objects_[weapon_selection].m_sell_value);
 
-									player.calculateWeaponDamage();
+									player.calculate_weapon_damage();
 
 
-									std::cout << "You equip your new " << mWeaponObjects[weaponSelection].mName << std::endl;
+									std::cout << "You equip your new " << m_weapon_objects_[weapon_selection].m_name << '\n';
 
-									exitWeapons = true;
+									exit_weapons = true;
 
 									break;
 								}
 								default:
 								{
-									std::cout << "No worries, maybe next time." << std::endl;
+									std::cout << "No worries, maybe next time." << '\n';
 									break;
 								}
 								}
 							}
 							else
 							{
-								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << std::endl;
+								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << '\n';
 							}
 
 							break;
 						}
 						case 4: // weapon 5
 						{
-							if (player.getGold() >= mWeaponObjects[weaponSelection].mSellValue)
+							if (player.get_gold() >= m_weapon_objects_[weapon_selection].m_sell_value)
 							{
 								// do you want to buy it?
 								std::cout << "Do you want to purchase this item? (y/n): ";
-								char userInput = 'n';
-								std::cin >> userInput;
+								char user_input2; // = 'n';
+								std::cin >> user_input2;
 
-								std::cout << std::endl;
+								std::cout << '\n';
 
-								switch (userInput)
+								switch (user_input2)
 								{
 								case 'y':
 								case 'Y':
 								{
-									std::cout << "Heres your new " << mWeaponObjects[weaponSelection].mName << ". Thanks for your purchase." << std::endl;
+									std::cout << "Here's your new " << m_weapon_objects_[weapon_selection].m_name << ". Thanks for your purchase." << '\n';
 
-									player.equipWeapon(mWeaponObjects[weaponSelection]);
-									player.buy(mWeaponObjects[weaponSelection].mSellValue);
+									player.equip_weapon(m_weapon_objects_[weapon_selection]);
+									player.buy(m_weapon_objects_[weapon_selection].m_sell_value);
 
-									player.calculateWeaponDamage();
+									player.calculate_weapon_damage();
 
 
-									std::cout << "You equip your new " << mWeaponObjects[weaponSelection].mName << std::endl;
+									std::cout << "You equip your new " << m_weapon_objects_[weapon_selection].m_name << '\n';
 
-									exitWeapons = true;
+									exit_weapons = true;
 
 									break;
 								}
 								default:
 								{
-									std::cout << "No worries, maybe next time." << std::endl;
+									std::cout << "No worries, maybe next time." << '\n';
 									break;
 								}
 								}
 							}
 							else
 							{
-								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << std::endl;
+								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << '\n';
 							}
 
 							break;
 						}
 						case 5: // weapon 6
 						{
-							if (player.getGold() >= mWeaponObjects[weaponSelection].mSellValue)
+							if (player.get_gold() >= m_weapon_objects_[weapon_selection].m_sell_value)
 							{
 								// do you want to buy it?
 								std::cout << "Do you want to purchase this item? (y/n): ";
-								char userInput = 'n';
-								std::cin >> userInput;
+								char user_input2; // = 'n';
+								std::cin >> user_input2;
 
-								std::cout << std::endl;
+								std::cout << '\n';
 
-								switch (userInput)
+								switch (user_input2)
 								{
 								case 'y':
 								case 'Y':
 								{
-									std::cout << "Heres your new " << mWeaponObjects[weaponSelection].mName << ". Thanks for your purchase." << std::endl;
+									std::cout << "Here's your new " << m_weapon_objects_[weapon_selection].m_name << ". Thanks for your purchase." << '\n';
 
-									player.equipWeapon(mWeaponObjects[weaponSelection]);
-									player.buy(mWeaponObjects[weaponSelection].mSellValue);
+									player.equip_weapon(m_weapon_objects_[weapon_selection]);
+									player.buy(m_weapon_objects_[weapon_selection].m_sell_value);
 
-									player.calculateWeaponDamage();
+									player.calculate_weapon_damage();
 
 
-									std::cout << "You equip your new " << mWeaponObjects[weaponSelection].mName << std::endl;
+									std::cout << "You equip your new " << m_weapon_objects_[weapon_selection].m_name  << '\n';
 
-									exitWeapons = true;
+									exit_weapons = true;
 
 									break;
 								}
 								default:
 								{
-									std::cout << "No worries, maybe next time." << std::endl;
+									std::cout << "No worries, maybe next time." << '\n';
 									break;
 								}
 								}
 							}
 							else
 							{
-								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << std::endl;
+								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << '\n';
 							}
 
 							break;
 						}
 						default: // exit weapons list
 						{
-							exitWeapons = true;
+							exit_weapons = true;
 
 							break;
 						}
@@ -386,212 +383,212 @@ void Store::enter(Player& player)
 			}
 			case 2:  // ARMOR
 			{
-				bool exitArmor = false;
+				bool exit_armor = false;
 
-				while (!exitArmor)
+				while (!exit_armor)
 				{
-					std::cout << std::endl;
+					std::cout << '\n';
 
 
-					// display the weapons for sale
-					std::cout << "Armor List" << std::endl;
-					std::cout << "------------" << std::endl;
+					// display the armor for sale
+					std::cout << "Armor List" << '\n';
+					std::cout << "------------" << '\n';
 
 					int count = 0;
-					for (int i = 0; i < mArmorObjects.size(); i++)
+					for (size_t i = 0; i < m_armor_objects_.size(); i++)
 					{
-						std::cout << i << ") " << mArmorObjects[i].mName << std::endl;
+						std::cout << i << ") " << m_armor_objects_[i].m_name << ", price: " << m_armor_objects_[i].m_sell_value << '\n';
 
 						count++;
 					}
 
-					std::cout << count << ") Exit Armor List" << std::endl;
+					std::cout << count << ") Exit Armor List" << '\n';
 					std::cout << "Enter your selection: ";
 
-					int armorSelection = 0;
-					std::cin >> armorSelection;
+					int armor_selection = 0;
+					std::cin >> armor_selection;
 
-					switch (armorSelection)
+					switch (armor_selection)
 					{
 						case 0: // armor 1
 						{
-							if (player.getGold() >= mArmorObjects[armorSelection].mSellValue)
+							if (player.get_gold() >= m_armor_objects_[armor_selection].m_sell_value)
 							{
 								// do you want to buy it?
 								std::cout << "Do you want to purchase this item? (y/n): ";
-								char userInput = 'n';
-								std::cin >> userInput;
+								char user_input2; // = 'n';
+								std::cin >> user_input2;
 
-								std::cout << std::endl;
+								std::cout << '\n';
 
-								switch (userInput)
+								switch (user_input2)
 								{
 									case 'y':
 									case 'Y':
 									{
-										std::cout << "Heres your new " << mArmorObjects[armorSelection].mName << ". Thanks for your purchase." << std::endl;
+										std::cout << "Here's your new " << m_armor_objects_[armor_selection].m_name << ". Thanks for your purchase." << '\n';
 
-										player.equipArmor(mArmorObjects[armorSelection]);
-										player.buy(mArmorObjects[armorSelection].mSellValue);
+										player.equip_armor(m_armor_objects_[armor_selection]);
+										player.buy(m_armor_objects_[armor_selection].m_sell_value);
 
-										player.calculateArmor();
+										player.calculate_armor();
 
 
-										std::cout << "You equip your new " << mArmorObjects[armorSelection].mName << std::endl;
+										std::cout << "You equip your new " << m_armor_objects_[armor_selection].m_name << '\n';
 
-										exitArmor = true;
+										exit_armor = true;
 
 										break;
 									}
 									default:
 									{
-										std::cout << "No worries, maybe next time." << std::endl;
+										std::cout << "No worries, maybe next time." << '\n';
 										break;
 									}
 								}
 							}
 							else
 							{
-								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << std::endl;
+								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << '\n';
 							}
 
 							break;
 						}
 						case 1: // armor 2
 						{
-							if (player.getGold() >= mArmorObjects[armorSelection].mSellValue)
+							if (player.get_gold() >= m_armor_objects_[armor_selection].m_sell_value)
 							{
 								// do you want to buy it?
 								std::cout << "Do you want to purchase this item? (y/n): ";
-								char userInput = 'n';
-								std::cin >> userInput;
+								char user_input2; // = 'n';
+								std::cin >> user_input2;
 
-								std::cout << std::endl;
+								std::cout << '\n';
 
-								switch (userInput)
+								switch (user_input2)
 								{
 									case 'y':
 									case 'Y':
 									{
-										std::cout << "Heres your new " << mArmorObjects[armorSelection].mName << ". Thanks for your purchase." << std::endl;
+										std::cout << "Here's your new " << m_armor_objects_[armor_selection].m_name << ". Thanks for your purchase." << '\n';
 
-										player.equipArmor(mArmorObjects[armorSelection]);
-										player.buy(mArmorObjects[armorSelection].mSellValue);
+										player.equip_armor(m_armor_objects_[armor_selection]);
+										player.buy(m_armor_objects_[armor_selection].m_sell_value);
 
-										player.calculateArmor();
+										player.calculate_armor();
 
 
-										std::cout << "You equip your new " << mArmorObjects[armorSelection].mName << std::endl;
+										std::cout << "You equip your new " << m_armor_objects_[armor_selection].m_name << '\n';
 
-										exitArmor = true;
+										exit_armor = true;
 
 										break;
 									}
 									default:
 									{
-										std::cout << "No worries, maybe next time." << std::endl;
+										std::cout << "No worries, maybe next time." << '\n';
 										break;
 									}
 								}
 							}
 							else
 							{
-								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << std::endl;
+								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << '\n';
 							}
 
 							break;
 						}
 						case 2: // armor 3
 						{
-							if (player.getGold() >= mArmorObjects[armorSelection].mSellValue)
+							if (player.get_gold() >= m_armor_objects_[armor_selection].m_sell_value)
 							{
 								// do you want to buy it?
 								std::cout << "Do you want to purchase this item? (y/n): ";
-								char userInput = 'n';
-								std::cin >> userInput;
+								char user_input2; // = 'n';
+								std::cin >> user_input2;
 
-								std::cout << std::endl;
+								std::cout << '\n';
 
-								switch (userInput)
+								switch (user_input2)
 								{
 									case 'y':
 									case 'Y':
 									{
-										std::cout << "Heres your new " << mArmorObjects[armorSelection].mName << ". Thanks for your purchase." << std::endl;
+										std::cout << "Here's your new " << m_armor_objects_[armor_selection].m_name << ". Thanks for your purchase." << '\n';
 
-										player.equipArmor(mArmorObjects[armorSelection]);
-										player.buy(mArmorObjects[armorSelection].mSellValue);
+										player.equip_armor(m_armor_objects_[armor_selection]);
+										player.buy(m_armor_objects_[armor_selection].m_sell_value);
 
-										player.calculateArmor();
+										player.calculate_armor();
 
 
-										std::cout << "You equip your new " << mArmorObjects[armorSelection].mName << std::endl;
+										std::cout << "You equip your new " << m_armor_objects_[armor_selection].m_name << '\n';
 
-										exitArmor = true;
+										exit_armor = true;
 
 										break;
 									}
 									default:
 									{
-										std::cout << "No worries, maybe next time." << std::endl;
+										std::cout << "No worries, maybe next time." << '\n';
 										break;
 									}
 								}
 							}
 							else
 							{
-								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << std::endl;
+								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << '\n';
 							}
 
 							break;
 						}
 						case 3: // armor 4
 						{
-							if (player.getGold() >= mArmorObjects[armorSelection].mSellValue)
+							if (player.get_gold() >= m_armor_objects_[armor_selection].m_sell_value)
 							{
 								// do you want to buy it?
 								std::cout << "Do you want to purchase this item? (y/n): ";
-								char userInput = 'n';
-								std::cin >> userInput;
+								char user_input2; // = 'n';
+								std::cin >> user_input2;
 
-								std::cout << std::endl;
+								std::cout << '\n';
 
-								switch (userInput)
+								switch (user_input2)
 								{
 									case 'y':
 									case 'Y':
 									{
-										std::cout << "Heres your new " << mArmorObjects[armorSelection].mName << ". Thanks for your purchase." << std::endl;
+										std::cout << "Here's your new " << m_armor_objects_[armor_selection].m_name << ". Thanks for your purchase." << '\n';
 
-										player.equipArmor(mArmorObjects[armorSelection]);
-										player.buy(mArmorObjects[armorSelection].mSellValue);
+										player.equip_armor(m_armor_objects_[armor_selection]);
+										player.buy(m_armor_objects_[armor_selection].m_sell_value);
 
-										player.calculateArmor();
+										player.calculate_armor();
 
 
-										std::cout << "You equip your new " << mArmorObjects[armorSelection].mName << std::endl;
+										std::cout << "You equip your new " << m_armor_objects_[armor_selection].m_name << '\n';
 
-										exitArmor = true;
+										exit_armor = true;
 
 										break;
 									}
 									default:
 									{
-										std::cout << "No worries, maybe next time." << std::endl;
+										std::cout << "No worries, maybe next time." << '\n';
 										break;
 									}
 								}
 							}
 							else
 							{
-								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << std::endl;
+								std::cout << "I'm sorry you can't afford that item at this time. Maybe later." << '\n';
 							}
 
 							break;
 						}
 						default: // exit armor list
 						{
-							exitArmor = true;
+							exit_armor = true;
 
 							break;
 						}
@@ -603,33 +600,33 @@ void Store::enter(Player& player)
 			}
 			case 3: // buy potion
 			{
-				std::cout << std::endl << "The \"healing potion\" will cost 30 gold, do you still want it (y/n)? ";
-				char potionSelection = 'n';
-				std::cin >> potionSelection;
+				std::cout << "\nThe \"healing potion\" will cost 30 gold, do you still want it (y/n)? ";
+				char potion_selection = 'n';
+				std::cin >> potion_selection;
 
-				switch (potionSelection)
+				switch (potion_selection)
 				{
 				case 'y':
 				case 'Y':
 				{
-					Potion newPotion = addPotion(3, 8, 30); // low 3, high 8, price 30
-					if (!player.addNewPotion(newPotion))
+					const potion new_potion = add_potion(3, 8, 30); // low 3, high 8, price 30
+					if (!player.add_new_potion(new_potion))
 					{
-						std::cout << std::endl;
-						std::cout << "I'm sorry but it looks like you already have too many potions," << std::endl;
-						std::cout << "these will be here if you need some once you used what you have." << std::endl << std::endl;
+						std::cout << '\n';
+						std::cout << "I'm sorry but it looks like you already have too many potions," << '\n';
+						std::cout << "these will be here if you need some once you used what you have." << '\n' << '\n';
 					}
 					else
 					{
-						player.buy(newPotion.mSellValue);
-						std::cout << "here you go, thats 1 healing potion." << std::endl;
+						player.buy(new_potion.m_sell_value);
+						std::cout << "here you go, that's 1 healing potion." << '\n';
 					}
 
 					break;
 				} // case 'y' || 'Y'
 				default: // this option == no
 				{
-					std::cout << "no worries, maybe next time." << std::endl;
+					std::cout << "no worries, maybe next time." << '\n';
 
 					break;
 				} // default
@@ -637,22 +634,22 @@ void Store::enter(Player& player)
 				
 				break;
 			}
-			default: // leave store
+			default: // leave the store
 			{
-				exitStore = true;
+				exit_store = true;
 
 				////////////////////////////////////////////////////////////////////
 				// DEBUG msg
-				if (debugLog.enableDebugMessages)
+				if (debug_log.enable_debug_messages)
 				{
-					std::cout << "debug message" << std::endl;
-					std::cout << "Weapon Bonus low: " << player.getWeaponBonux(true) << std::endl;
-					std::cout << "Weapon Bonus high: " << player.getWeaponBonux(false) << std::endl;
-					std::cout << std::endl;
+					std::cout << "debug message" << '\n';
+					std::cout << "Weapon Bonus low: " << player.get_weapon_bonus(true) << '\n';
+					std::cout << "Weapon Bonus high: " << player.get_weapon_bonus(false) << '\n';
+					std::cout << '\n';
 
-					std::cout << "original weapon low: " << player.getOriginalWeaponValue(true) << std::endl;
-					std::cout << "original weapon high: " << player.getOriginalWeaponValue(false) << std::endl;
-					std::cout << std::endl;
+					std::cout << "original weapon low: " << player.get_original_weapon_value(true) << '\n';
+					std::cout << "original weapon high: " << player.get_original_weapon_value(false) << '\n';
+					std::cout << '\n';
 
 				}
 
@@ -665,11 +662,6 @@ void Store::enter(Player& player)
 }
 
 
-Store::Store()
-{
-	
-}
+store::store() = default;
 
-Store::~Store()
-{
-}
+store::~store() = default;

@@ -6,11 +6,11 @@
 #include "Range.h"
 #include <string>
 
-struct Weapon
+struct weapon
 {
-	std::string mName;
-	Range mDamageRange;
-	int mSellValue;
+	std::string m_name;
+	range m_damage_range;
+	int m_sell_value;
 
 	//Weapon()
 	//{}

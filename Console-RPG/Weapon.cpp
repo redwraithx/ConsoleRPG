@@ -5,19 +5,19 @@
 #include <vector>
 
 
-Weapon addWeapon(std::string name, int damageLow, int damageHigh, int price)
+static weapon add_weapon(const std::string& name, const int damage_low, const int damage_high, const int price)
 {
-	Weapon newWeapon;
+	weapon new_weapon;
 
-	newWeapon.mName = name;
-	newWeapon.mDamageRange.mLow = damageLow;
-	newWeapon.mDamageRange.mHigh = damageHigh;
-	newWeapon.mSellValue = price;
+	new_weapon.m_name = name;
+	new_weapon.m_damage_range.m_low = damage_low;
+	new_weapon.m_damage_range.m_high = damage_high;
+	new_weapon.m_sell_value = price;
 
-	return newWeapon;
+	return new_weapon;
 }
 
-void InitWeapons(std::vector<Weapon>& weaponsContainer, std::string playerClass)
+void init_weapons(std::vector<weapon>& weapons_container, const std::string& player_class)
 {
 	//class type games
 	// ---------------
@@ -25,30 +25,30 @@ void InitWeapons(std::vector<Weapon>& weaponsContainer, std::string playerClass)
 	// ---------------
 	// 1) Short Sword
 	// 2) Bronze Sword
-	// 3) Iron Long Sword
+	// 3) Iron-Long Sword
 	// 4) Dark Steel Long Sword
 	// 5) RuneBlade Bastard Sword
 	// 6) Molten RuneBlade Sword of Dragons
 
-	if (playerClass == "Fighter")
+	if (player_class == "Fighter")
 	{
 		// 1) Short Sword, 
-		weaponsContainer.push_back(addWeapon("Short Sword", 1, 8, 0));
+		weapons_container.push_back(add_weapon("Short Sword", 1, 8, 0));
 
 		// 2) Bronze Sword
-		weaponsContainer.push_back(addWeapon("Bronze Sword", 2, 9, 200));
+		weapons_container.push_back(add_weapon("Bronze Sword", 2, 9, 200));
 
-		// 3) Iron Long Sword
-		weaponsContainer.push_back(addWeapon("Iron LongSword", 2, 11, 450));
+		// 3) Iron-Long Sword
+		weapons_container.push_back(add_weapon("Iron LongSword", 2, 11, 450));
 
 		// 4) Dark Steel Long Sword
-		weaponsContainer.push_back(addWeapon("Dark Steel LongSword", 4, 15, 1000));
+		weapons_container.push_back(add_weapon("Dark Steel LongSword", 4, 15, 1000));
 
 		// 5) RuneBlade Bastard Sword
-		weaponsContainer.push_back(addWeapon("RuneBlade Bastard Sword", 6, 17, 1500));
+		weapons_container.push_back(add_weapon("RuneBlade Bastard Sword", 6, 17, 1500));
 
 		// 6) Molten RuneBlade Sword of Dragons
-		weaponsContainer.push_back(addWeapon("Molten RuneBlade sword of Dragons", 8, 20, 2500));
+		weapons_container.push_back(add_weapon("Molten RuneBlade sword of Dragons", 8, 20, 2500));
 
 	}
 	
@@ -62,26 +62,26 @@ void InitWeapons(std::vector<Weapon>& weaponsContainer, std::string playerClass)
 	// 5) Staff of Ethereal Energy
 	// 6) Staff of the Void Dragon
 
-	else if (playerClass == "Wizard")
+	else if (player_class == "Wizard")
 	{
 		
 		// 1) worn wooden staff
-		weaponsContainer.push_back(addWeapon("Worn Wooden Staff", 1, 4, 0));
+		weapons_container.push_back(add_weapon("Worn Wooden Staff", 1, 4, 0));
 
 		// 2) driftwood staff
-		weaponsContainer.push_back(addWeapon("DriftWood Initiate Staff", 2, 4, 200));
+		weapons_container.push_back(add_weapon("DriftWood Initiate Staff", 2, 4, 200));
 
 		// 3) DarkWood rune Staff
-		weaponsContainer.push_back(addWeapon("Darkwood Rune Staff", 2, 5, 450));
+		weapons_container.push_back(add_weapon("DarkWood Rune Staff", 2, 5, 450));
 
 		// 4) Staff of the Magi
-		weaponsContainer.push_back(addWeapon("Staff of the Magi", 3, 6, 1000));
+		weapons_container.push_back(add_weapon("Staff of the Magi", 3, 6, 1000));
 
 		// 5) Staff of Ethereal Energy
-		weaponsContainer.push_back(addWeapon("Staff of Ethereal Energy", 4, 8, 1500));
+		weapons_container.push_back(add_weapon("Staff of Ethereal Energy", 4, 8, 1500));
 
 		// 6) Staff of the Void Dragon
-		weaponsContainer.push_back(addWeapon("Staff of the void Dragon", 5, 10, 2500));
+		weapons_container.push_back(add_weapon("Staff of the void Dragon", 5, 10, 2500));
 
 	}
 
@@ -95,25 +95,25 @@ void InitWeapons(std::vector<Weapon>& weaponsContainer, std::string playerClass)
 	// 5) Mace of the Ordained
 	// 6) Mace of the Emerald Dragon
 
-	else if (playerClass == "Cleric")
+	else if (player_class == "Cleric")
 	{
 		// 1) broken hammer
-		weaponsContainer.push_back(addWeapon("Broken Hammer", 1, 4, 0));
+		weapons_container.push_back(add_weapon("Broken Hammer", 1, 4, 0));
 
 		// 2) Iron Mace
-		weaponsContainer.push_back(addWeapon("Iron Mace", 2, 4, 200));
+		weapons_container.push_back(add_weapon("Iron Mace", 2, 4, 200));
 
 		// 3) Blackened Mace
-		weaponsContainer.push_back(addWeapon("Blackened Mace", 2, 5, 450));
+		weapons_container.push_back(add_weapon("Blackened Mace", 2, 5, 450));
 
 		// 4) Firebrand Mace
-		weaponsContainer.push_back(addWeapon("Firebrand Blessed Mace", 3, 8, 1000));
+		weapons_container.push_back(add_weapon("Firebrand Blessed Mace", 3, 8, 1000));
 
 		// 5) Mace of the Ordained
-		weaponsContainer.push_back(addWeapon("Mace of the Ordained", 4, 12, 1500));
+		weapons_container.push_back(add_weapon("Mace of the Ordained", 4, 12, 1500));
 
 		// 6) Mace of the Emerald Dragon
-		weaponsContainer.push_back(addWeapon("Mace of the Emerald Dragon", 5, 15, 2500));
+		weapons_container.push_back(add_weapon("Mace of the Emerald Dragon", 5, 15, 2500));
 
 	}
 
@@ -130,22 +130,22 @@ void InitWeapons(std::vector<Weapon>& weaponsContainer, std::string playerClass)
 	else // thief
 	{
 		// 1) tarnished dagger
-		weaponsContainer.push_back(addWeapon("Tarnished Dagger", 1, 4, 0));
+		weapons_container.push_back(add_weapon("Tarnished Dagger", 1, 4, 0));
 
 		// 2) iron dagger
-		weaponsContainer.push_back(addWeapon("Iron Dagger", 2, 5, 200));
+		weapons_container.push_back(add_weapon("Iron Dagger", 2, 5, 200));
 
 		// 3) Twisted Steel Dagger
-		weaponsContainer.push_back(addWeapon("Twisted Steel Dagger", 3, 6, 450));
+		weapons_container.push_back(add_weapon("Twisted Steel Dagger", 3, 6, 450));
 
 		// 4) Faded Shadow twin dagger
-		weaponsContainer.push_back(addWeapon("Faded Shadow Twin Dagger", 4, 8, 1000));
+		weapons_container.push_back(add_weapon("Faded Shadow Twin Dagger", 4, 8, 1000));
 
 		// 5) Crystallized Blood Venom Dagger
-		weaponsContainer.push_back(addWeapon("Crystallized Blood Venom Dagger", 6, 13, 1500));
+		weapons_container.push_back(add_weapon("Crystallized Blood Venom Dagger", 6, 13, 1500));
 
 		// 6) Ancient Dagger of the fallen Hero
-		weaponsContainer.push_back(addWeapon("Ancient Dagger of the fallen Hero", 8, 18, 2500));
+		weapons_container.push_back(add_weapon("Ancient Dagger of the fallen Hero", 8, 18, 2500));
 	}
 
 }

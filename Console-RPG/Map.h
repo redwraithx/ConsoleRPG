@@ -9,30 +9,30 @@
 #include <string>
 
 
-class Map
+class map
 {
 public:
 	// constructor.
-	Map();
+	map();
 	
 	// Methods
-	int getPlayerXPos();
-	int getPlayerYPos();
-	void movePlayer();
+	int get_player_x_pos() const;
+	int get_player_y_pos() const;
+	void move_player();
 	//Monster* checkRandomEncounter(Player& player);
-	void checkRandomEncounter(Player& player, Monster* monster[]);
+	void check_random_encounter(player& player, Monster* monster[]) const;
 
-	void CheckForMonster(Monster* monster[], int monsterNumber);
+	static auto check_for_monster(Monster* monster[], int monster_number, int players_current_level = 1) -> void;
 	
-	void printPlayerPos();
+	void print_player_pos() const;
 	
 	
-	~Map();
+	~map();
 
 private:
 	// data members
-	int mPlayerXPos;
-	int mPlayerYPos;
+	int m_player_x_pos_;
+	int m_player_y_pos_;
 
 
 };

@@ -6,25 +6,25 @@
 
 
 
-Map::Map()
+map::map()
 {
 	// player starts at origin (0, 0)
-	mPlayerXPos = 0;
-	mPlayerYPos = 0;
+	m_player_x_pos_ = 0;
+	m_player_y_pos_ = 0;
 }
 
 
-int Map::getPlayerXPos()
+int map::get_player_x_pos() const
 {
-	return mPlayerXPos;
+	return m_player_x_pos_;
 }
 
-int Map::getPlayerYPos()
+int map::get_player_y_pos() const
 {
-	return mPlayerYPos;
+	return m_player_y_pos_;
 }
 
-void Map::movePlayer()
+void map::move_player()
 {
 	int selection = 1;
 	std::cout << "1) North, 2) East, 3) South, 4) West: ";
@@ -34,31 +34,34 @@ void Map::movePlayer()
 	switch (selection)
 	{
 	case 1: // north
-		mPlayerYPos++;
+		m_player_y_pos_++;
 		break;
 	case 2: // East
-		mPlayerXPos++;
+		m_player_x_pos_++;
 		break;
 	case 3: // south
-		mPlayerYPos--;
+		m_player_y_pos_--;
 		break;
 	default: // west
-		mPlayerXPos--;
+		m_player_x_pos_--;
 		break;
 	}
 
-	std::cout << std::endl;
+	std::cout << '\n';
 
 }
 
-void Map::checkRandomEncounter(Player& player, Monster* monster[]) // this code could easily be refactored to use a switch statement and only type out the msg's once for all statments.
+// this code could easily be refactored to use a switch statement and only type out the msg's once for all statments.
+void map::check_random_encounter(player& player, Monster* monster[]) const
 {
-	monster[0] = 0; // null monster 1 pointer
-	monster[1] = 0; // null monster 2 pointer
+	monster[0] = nullptr; // null monster 1 pointer
+	monster[1] = nullptr; // null monster 2 pointer
 
-	if (getPlayerXPos() == 0 && getPlayerYPos() == 4)
+	// check if player is at a store
+	const int find_store = random(0, 100);
+	if (get_player_x_pos() % 2 == 0 && get_player_y_pos() % 4 == 0 && find_store <= 5)
 	{
-		Store store;
+		store store;
 		store.enter(player);
 
 		//return monster;
@@ -66,27 +69,24 @@ void Map::checkRandomEncounter(Player& player, Monster* monster[]) // this code 
 		return;
 	}
 
-	CheckForMonster(monster, 0);
-
-	if (monster[0] != 0 && player.getLevel() >= 6)
+	check_for_monster(monster, 0, player.get_level());
+	
+	if (monster[0] != nullptr && player.get_level() >= 6)
 	{
-		CheckForMonster(monster, 1);
+		check_for_monster(monster, 1, player.get_level());
 	}
 
 
 	//return monster;
 }
 
-void Map::CheckForMonster(Monster* monster[], int monsterNumber)
+void map::check_for_monster(Monster* monster[], const int monster_number, const int players_current_level)
 {
-	int roll = Random(0, 23);
+	monster[monster_number] = nullptr; // clear the pointer to a monster
 
-
-	//monster = 0; // null monsters pointer
-
-
-	//int monsterCounter = 0;
-
+	// generate a potential random encounter.
+	const int roll = random(0, 23);
+	
 	if (roll <= 5)
 	{
 		// no encounter, return a null pointer.
@@ -97,214 +97,127 @@ void Map::CheckForMonster(Monster* monster[], int monsterNumber)
 	}
 	else if (roll >= 6 && roll <= 10)
 	{
-		monster[monsterNumber] = new Monster("Orc", 10, 8, 200, 50, 1, "Short Sword", 2, 7);
+		constexpr int monsters_spawn_level = 1;
+		
+		if (players_current_level >= monsters_spawn_level)
+		{
+			monster[monster_number] = new Monster("Orc", monsters_spawn_level, 10, 8, 200, 50, 1, "Short Sword", 2, 7);
 
-		std::cout << "You encountered an Orc!" << std::endl;
-		std::cout << "Prepare for battle!" << std::endl;
-		std::cout << std::endl;
+			/*std::cout << "You encountered an Orc!" << '\n';
+			std::cout << "Prepare for battle!" << '\n';
+			std::cout << '\n';*/
+		}
 	}
 	else if (roll >= 11 && roll <= 15)
 	{
-		monster[monsterNumber] = new Monster("Goblin", 6, 6, 100, 75, 0, "Dagger", 1, 5);
+		constexpr int monsters_spawn_level = 1;
+		
+		if (players_current_level >= monsters_spawn_level)
+		{
+			monster[monster_number] = new Monster("Goblin", monsters_spawn_level, 6, 6, 100, 75, 0, "Dagger", 1, 5);
 
-		std::cout << "You encountered a Goblin!" << std::endl;
-		std::cout << "Prepare for battle!" << std::endl;
-		std::cout << std::endl;
+			/*std::cout << "You encountered a Goblin!" << '\n';
+			std::cout << "Prepare for battle!" << '\n';
+			std::cout << '\n';*/
+		}
 	}
 	else if (roll >= 16 && roll <= 19)
 	{
-		monster[monsterNumber] = new Monster("Ogre", 20, 12, 500, 150, 2, "Club", 3, 8);
+		constexpr int monsters_spawn_level = 2;
+		
+		if (players_current_level >= monsters_spawn_level)
+		{
+			monster[monster_number] = new Monster("Ogre", monsters_spawn_level, 20, 12, 500, 150, 2, "Club", 3, 8);
 
-		std::cout << "You encountered an Ogre!" << std::endl;
-		std::cout << "Prepare for battle!" << std::endl;
-		std::cout << std::endl;
+			/*std::cout << "You encountered an Ogre!" << '\n';
+			std::cout << "Prepare for battle!" << '\n';
+			std::cout << '\n';*/
+		}
 	}
 	else if (roll == 20)
 	{
-		monster[monsterNumber] = new Monster("Orc Lord", 25, 15, 2000, 500, 5, "Two Handed Sword", 5, 20);
+		constexpr int monsters_spawn_level = 5;
+		
+		if (players_current_level >= monsters_spawn_level)
+		{
+			monster[monster_number] = new Monster("Orc Lord", monsters_spawn_level, 25, 15, 2000, 500, 5, "Two Handed Sword", 5, 20);
 
-		std::cout << "You encounted an Orc Lord!!!" << std::endl;
-		std::cout << "Prepare for battle!" << std::endl;
-		std::cout << std::endl;
+			/*std::cout << "You encountered an Orc Lord!!!" << '\n';
+			std::cout << "Prepare for battle!" << '\n';
+			std::cout << '\n';*/
+		}
 	}
 	else if (roll == 21)
 	{
-		monster[monsterNumber] = new Monster("Baby Dragon", 75, 35, 4000, 1500, 10, "Tail Swipe", 30, 75);
+		constexpr int monsters_spawn_level = 12;
+		
+		if (players_current_level >= monsters_spawn_level)
+		{
+			monster[monster_number] = new Monster("Baby Dragon", monsters_spawn_level, 75, 35, 4000, 1500, 10, "Tail Swipe", 30, 75);
 
-		std::cout << "You encounted an Baby Dragon!!!" << std::endl;
-		std::cout << "Prepare for battle!" << std::endl;
-		std::cout << std::endl;
+			/*std::cout << "You encountered an Baby Dragon!!!" << '\n';
+			std::cout << "Prepare for battle!" << '\n';
+			std::cout << '\n';*/
+		}
 	}
 	else if (roll == 22)
 	{
-		monster[monsterNumber] = new Monster("Green Dragon", 175, 35, 6000, 4000, 15, "Corrosive Breath", 50, 100);
+		constexpr int monsters_spawn_level = 18;
+		
+		if (players_current_level >= monsters_spawn_level)
+		{
+			monster[monster_number] = new Monster("Green Dragon", monsters_spawn_level, 175, 35, 6000, 4000, 15, "Corrosive Breath", 50, 100);
 
-		std::cout << "You encounted an Green Dragon!!!" << std::endl;
-		std::cout << "Prepare for battle!" << std::endl;
-		std::cout << std::endl;
+			/*std::cout << "You encountered an Green Dragon!!!" << '\n';
+			std::cout << "Prepare for battle!" << '\n';
+			std::cout << '\n';*/
+		}
 	}
 	else if (roll == 23)
 	{
-		monster[monsterNumber] = new Monster("Gold Dragon", 250, 55, 10000, 10000, 20, "Molten Lava Breath", 40, 125);
+		constexpr int monsters_spawn_level = 25;
+		
+		if (players_current_level >= monsters_spawn_level)
+		{
+			monster[monster_number] = new Monster("Gold Dragon", monsters_spawn_level, 250, 55, 10000, 10000, 20, "Molten Lava Breath", 40, 125);
 
-		std::cout << "You encounted an Golden Dragon!!!" << std::endl;
-		std::cout << "Prepare for battle!" << std::endl;
-		std::cout << std::endl;
+			/*std::cout << "You encountered an Golden Dragon!!!" << '\n';
+			std::cout << "Prepare for battle!" << '\n';
+			std::cout << '\n';*/
+		}
 	}
 	
+	if (monster[monster_number] != nullptr)
+	{
+		std::cout << "You encountered an " << monster[monster_number]->get_name();
+
+		
+		if (monster[monster_number]->get_name() == "Green Dragon" || 
+			monster[monster_number]->get_name() == "Gold Dragon")
+		{
+			std::cout << "!!!";
+		}
+		else if (monster[monster_number]->get_name() == "Baby Dragon")
+		{
+			std::cout << "!!";
+		}
+		else
+		{
+			std::cout << "!";
+		}
+		
+			
+		std::cout << "\nPrepare for battle!\n\n";
+	}
+
 	
 }
 
 
-//Monster* Map::checkRandomEncounter(Player& player) // this code could easily be refactored to use a switch statement and only type out the msg's once for all statments.
-//{
-//	if (getPlayerXPos() == 0 && getPlayerYPos() == 4)
-//	{
-//		Store store;
-//		store.enter(player);
-//
-//		Monster* monster = 0;
-//
-//		return monster;
-//
-//	}
-//
-//	int roll = Random(0, 20);
-//
-//	Monster* monster = 0; // null monster pointer
-//	monster = 0; // null monsters pointer
-//
-//
-//	int monsterCounter = 0;
-//
-//	if (roll <= 5)
-//	{
-//		// no encounter, return a null pointer.
-//		monster = 0;
-//
-//		//return 0;
-//	}
-//	else if (roll >= 6 && roll <= 10)
-//	{
-//		monster = new Monster("Orc", 10, 8, 200, 50, 1, "Short Sword", 2, 7);
-//
-//		std::cout << "You encountered an Orc!" << std::endl;
-//		std::cout << "Prepare for battle!" << std::endl;
-//		std::cout << std::endl;
-//	}
-//	else if (roll >= 11 && roll <= 15)
-//	{
-//		monster = new Monster("Goblin", 6, 6, 100, 75, 0, "Dagger", 1, 5);
-//
-//		std::cout << "You encountered a Goblin!" << std::endl;
-//		std::cout << "Prepare for battle!" << std::endl;
-//		std::cout << std::endl;
-//	}
-//	else if (roll >= 16 && roll <= 19)
-//	{
-//		monster = new Monster("Ogre", 20, 12, 500, 150, 2, "Club", 3, 8);
-//
-//		std::cout << "You encountered an Ogre!" << std::endl;
-//		std::cout << "Prepare for battle!" << std::endl;
-//		std::cout << std::endl;
-//	}
-//	else if (roll == 20)
-//	{
-//		monster = new Monster("Orc Lord", 25, 15, 2000, 500, 5, "Two Handed Sword", 5, 20);
-//
-//		std::cout << "You encounted an Orc Lord!!!" << std::endl;
-//		std::cout << "Prepare for battle!" << std::endl;
-//		std::cout << std::endl;
-//	}
-//
-//	return monster;
-//}
-
-
-//void Map::checkRandomEncounter(Player& player, Monster* monster[])
-//{
-//	if (getPlayerXPos() == 0 && getPlayerYPos() == 4)
-//	{
-//		Store store;
-//		store.enter(player);
-//
-//		Monster* monster = 0;
-//
-//		//return monster;
-//
-//	}
-//
-//	int roll = Random(0, 20);
-//
-//	//Monster* monster = 0; // null monster pointer
-//	monster[2] = nullptr; // null monsters pointer
-//
-//
-//	int monsterCounter = 0;
-//
-//	if (roll <= 5)
-//	{
-//		// no encounter, return a null pointer.
-//		monster[monsterCounter] = 0;
-//
-//		//return 0;
-//	}
-//	else if (roll >= 6 && roll <= 10) 
-//	{
-//		monster[monsterCounter] = new Monster("Orc", 10, 8, 200, 50, 1, "Short Sword", 2, 7);
-//
-//		std::cout << "You encountered an Orc!" << std::endl;
-//		std::cout << "Prepare for battle!" << std::endl;
-//		std::cout << std::endl;
-//	}
-//	else if (roll >= 11 && roll <= 15)
-//	{
-//		monster[monsterCounter] = new Monster("Goblin", 6, 6, 100, 75, 0, "Dagger", 1, 5);
-//
-//		std::cout << "You encountered a Goblin!" << std::endl;
-//		std::cout << "Prepare for battle!" << std::endl;
-//		std::cout << std::endl;
-//	}
-//	else if (roll >= 16 && roll <= 19)
-//	{
-//		monster[monsterCounter] = new Monster("Ogre", 20, 12, 500, 150, 2, "Club", 3, 8);
-//
-//		std::cout << "You encountered an Ogre!" << std::endl;
-//		std::cout << "Prepare for battle!" << std::endl;
-//		std::cout << std::endl;
-//	}
-//	else if (roll == 20)
-//	{
-//		monster[monsterCounter] = new Monster("Orc Lord", 25, 15, 2000, 500, 5, "Two Handed Sword", 5, 20);
-//
-//		std::cout << "You encounted an Orc Lord!!!" << std::endl;
-//		std::cout << "Prepare for battle!" << std::endl;
-//		std::cout << std::endl;
-//	}
-//
-//	if (player.getLevel() > 10 && monster[1] == 0)
-//	{
-//		if (Random(1, 10) >8 )
-//		{
-//			// get another monster.
-//			monsterCounter == 1;
-//
-//			//monster[monsterCounter] = checkRandomEncounter(player, monster);
-//
-//			checkRandomEncounter(player, monster);
-//		}
-//	}
-//	
-//
-//	//return &monster;
-//}
-
-void Map::printPlayerPos()
+void map::print_player_pos() const
 {
-	std::cout << "Player Position = (" << mPlayerXPos << ", " << mPlayerYPos << ")" << std::endl << std::endl;
+	std::cout << "\nMap Position = (" << m_player_x_pos_ << ", " << m_player_y_pos_ << ")" << "\n\n";
 }
 
 
-Map::~Map()
-{
-}
+map::~map() = default;

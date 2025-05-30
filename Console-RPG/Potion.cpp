@@ -2,13 +2,13 @@
 #include "Range.h"
 
 
-Potion addPotion(int low, int high, int price)
+potion add_potion(const int low, const int high, const int price)
 {
-	Potion newPotion;
+	potion new_potion;
 
-	newPotion.mPotionValue.mLow = low;
-	newPotion.mPotionValue.mHigh = high;
-	newPotion.mSellValue = price;
+	new_potion.m_potion_value.m_low = low;
+	new_potion.m_potion_value.m_high = high;
+	new_potion.m_sell_value = price;
 
-	return newPotion;
+	return new_potion;
 }

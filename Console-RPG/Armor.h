@@ -3,11 +3,11 @@
 
 #include <string>
 
-struct Armor
+struct armor
 {
-	std::string mName;
-	int mArmorValue;
-	int mSellValue; // usable in the store only, to set sale price, but can't be sold back.
+	std::string m_name;
+	int m_armor_value;
+	int m_sell_value; // usable in the store only, to set sale price, but can't be sold back.
 };
 
 

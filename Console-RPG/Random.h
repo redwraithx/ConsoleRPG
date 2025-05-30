@@ -6,9 +6,9 @@
 #include "Range.h"
 
 
-int Random(Range range);
+int random(range range);
 
-int Random(int a, int b);
+int random(const int low, const int high);
 
 
 #endif // RANDOM_H
